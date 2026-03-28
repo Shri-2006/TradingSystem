@@ -3,6 +3,7 @@ polygon-api-client
 ccxt
 pandas
 numpy
+ta
 
 # ML provider
 scikit-learn
