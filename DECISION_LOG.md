@@ -1,9 +1,9 @@
-#Decision Log to keep track of what I was thinking while building
+# Decision Log to keep track of what I was thinking while building
 
-##March 27, 2026-Configuration of the system and allocation of the money and where to invest
+## March 28, 2026-Configuration of the system and allocation of the money and where to invest
 **CONTEXT**: 
 
-Began building the program. Created structure of the overall project, wrote config.py, readme, core folder, requirements.txt and gitignore
+Began building the program. Created structure of the overall project, wrote config.py, readme, core folder, requirements.txt and gitignore and logger.py
 
 Options 1: Don't put env in gitignore or put it in
 Decision 1:
@@ -27,5 +27,16 @@ Options 5: Make percentages for kill switch different or this
 Decision 5: Choosing 15% and 30% kill switch for stable vs risky
 Why: 15% fits stable bot profile and can be possibly regrown. 30% in a risky is because risky is more aggressive and more volatile, but also because if more than 30 is lost then its time to stop.
 
-**RESULT OF 3/27/2026**
-Project pending, only basic configuration has been set.
+Options 6: Use SQLite or another alternative
+Decision 6: Use SQLite
+Why: There is no setup, uses a single file to transfer data, and no server process and since its only done locally and for myself, a larger database such as PostgreSQL or MySQL is not helpful at this stage or will be beneficial overall.
+
+Option 7: run pnl and reason as opptional or make it mandatory
+Decision 7: Make it optional 
+Why: there might be no valid answer the system will give
+
+
+**RESULT OF 3/28/2026**
+Project pending, foundation complete, allocation of funds, kill switch settings, list of potential assets, trade logging complete, configuration of system done. Next step is providing the data pipeline.
+
+
