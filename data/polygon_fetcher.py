@@ -1,0 +1,74 @@
+import os
+import pandas as pd
+from datetime import datetime, timedelta
+from polygon import RESTClient
+from core.config import POLYGON_API_KEY
+
+#first initialize the polygon client
+client=RESTClient(api_key=POLYGON_API_KEY)
+
+def get_historical_data(ticker, start, end,timespan="day"):
+    """
+    Fetches historical OHLCV data from polygon.io
+    ticker: e.g. "SPY" or "AAPL" or other investments
+    start : start date in string as "YYYY-MM-DD"
+    end   : end date in string "YYYY-MM-DD"
+    timespan: "day", "hour", or "minute"
+    Returns : pandas Dataframe with the columns {open, high, low, close, volume}
+    """
+    bars=client.get_aggs(
+        ticker=ticker,
+        multiplier=1,
+        timespan=timespan,
+        from_=start,
+        to=end,
+        limit=50000
+    )
+    #conversion of bars to dataframe
+    df=pd.DataFrame([{
+        'timestamp' :pd.to_datetime(bar.timestamp,unit='ms'),
+        'open'      :bar.open,
+        'high': bar.high,
+        'low': bar.low,
+        'close': bar.close,
+        'volume': bar.volume
+    }for bar in bars])
+
+    df.set_index('timestamp',inplace=True)
+    df.sort_index(inplace=True)
+    return df
+
+
+def get_latest_bar(ticker, timespan="day"):
+    """
+    Fetches the most recent price bar for live trading and is used by the bots to make real time decisions
+    ticker: e.g. "SPY" or "AAPL", basically what the bots are invested in
+    Returns: single rowed pandas dataframe
+    """
+
+    #set dates
+    end=datetime.today().strftime('%Y-%m-%d')#/ doesn't work idk why, prob a python thing
+    start=(datetime.today()-timedelta(days=5)).strftime('%Y-%m-%d')
+    #set the dataframe with historical data
+    df=get_historical_data(ticker,start,end,timespan)
+
+    #if no data in df, send a warning
+    if df.empty:
+        print(f"Warning, No data is in df for {ticker}")
+        return None
+    #return only the most recent row
+    return df.iloc[[-1]]
+
+def get_multiple_tickers(tickers,start,end,timespan="day"):
+    """
+    Fetch historical data for the given list of tickers. Returns a dictionary where each frame is a ticker and the value is in the dataframe.
+    tickers example is ["SPY","QQQ","AAPL"]
+    """
+    #initalize data as blank 
+    data={}
+    for t in tickers:
+        print(f"Fetching ticker {t}...")
+        df=get_historical_data(t,start,end,timespan)
+        if not df.empty: data[t]=df
+        else: print(f"Warning, no data is in {t}, and will be skipped")
+    return data
