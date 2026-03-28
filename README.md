@@ -73,12 +73,12 @@ Not ready for set up yet
 ## Progress
 
 ### In Progress:
-- data/polygon_fetcher.py
+-data/kraken_fetcher.py- fetch historical and live data relating to crypto from kraken
 ### Completed Parts:
 - core/config.py - This provides the configuration of the system and what are the providers
 - core/logger.py - Creates database and provides functions to initialize the database tables, log each trade, and get past trades from database
 - core/features.py- shared feature engineering for all 3 strategy bots. Computed rolling averages, RSI, momentum, Bollinger Bands, ATR, z-score, and volume indicators from raw data with open, high, low, close, volume data.
-
+- data/polygon_fetcher.py - fetch historical and live data relating to stocks and etfs from polygon.io
 
 
 ### nice sources to read up on:
