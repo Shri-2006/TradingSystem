@@ -1,0 +1,26 @@
+# Data sources 
+polygon-api-client
+ccxt
+pandas
+numpy
+
+# ML provider
+scikit-learn
+xgboost
+stable-baselines3
+gymnasium
+
+# Backtesting of work
+vectorbt
+
+# Dashboard is streamlit
+streamlit
+
+# Scheduling of apis
+APScheduler
+
+# Environment is this
+python-dotenv
+
+# Testing of system
+pytest
