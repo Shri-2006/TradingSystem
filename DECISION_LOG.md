@@ -35,6 +35,10 @@ Option 7: run pnl and reason as opptional or make it mandatory
 Decision 7: Make it optional 
 Why: there might be no valid answer the system will give
 
+Option 8: Create 3 bots or 4 bots
+Decision 8: Make stable, risky1 and risky 2
+Why:I didn't create a stable2 for crypto as the market does not have enough historical data for me to trust it 
+
 
 **RESULT OF 3/28/2026**
 Project pending, foundation complete, allocation of funds, kill switch settings, list of potential assets, trade logging complete, configuration of system done. Next step is providing the data pipeline.
