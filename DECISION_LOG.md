@@ -44,3 +44,27 @@ Why:I didn't create a stable2 for crypto as the market does not have enough hist
 Project pending, foundation complete, allocation of funds, kill switch settings, list of potential assets, trade logging complete, configuration of system done. Next step is providing the data pipeline.
 
 
+## March 28, 2026 (midday)-Feature Engineering
+**Context**
+A way to transform the raw data of prices into understandable data that ML models can learn and train on was the work done at this time.
+
+**Options Considered 1:**
+- Separate features into multiple files per bot
+-  Build features into a single file for all bots
+**Decision 1:** Build a single file for all bots
+**Why**: To reduce complexity of the overall program, and because these features are fairly similar across all strategies, it justs needs adjustment per strategy and that can be done in the input.
+
+**Options Considered 2:**
+- Copy the dataframe per features before adjusting the new copy
+- Modify the original dataframe
+**Decision 2:** Copy and modify the copy of the dataframe.
+**Why:** Should the data get corrupted while doing the features, it would be best to have the original data still safe and secure
+
+**Options Considered 3:** 
+- Use normal averages of the entire time
+- Use rolling averages 
+**Decision 3:** Use rolling averages
+**Why:** To keep the bot more accurate. Past data may no longer reflect current markets and may actually be harmful in future predictions
+
+**Results of March 28th 2026 Midday session**
+Feature engineering is now complete. Indicators that were implemented: rolling averages, RSI, momentum, Bollinger Bands, ATR, Z-score, and volume ratios. Tests have not yet happened because system is not yet ready for testing.
