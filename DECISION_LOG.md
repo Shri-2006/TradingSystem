@@ -68,3 +68,4 @@ A way to transform the raw data of prices into understandable data that ML model
 
 **Results of March 28th 2026 Midday session**
 Feature engineering is now complete. Indicators that were implemented: rolling averages, RSI, momentum, Bollinger Bands, ATR, Z-score, and volume ratios. Tests have not yet happened because system is not yet ready for testing.
+
