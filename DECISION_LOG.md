@@ -104,17 +104,77 @@ Stick to day data since we are sticking to free tier and minute/hour would requi
 **Context:**
 I am in a location that is geoblocked by Kraken at the time of this bot creation. Kraken was supposed to be the crypto checker for risky2
 
-**Options Considered:**
+**Options Considered1:**
 - Lie about location to use Kraken
 - Use Gemini (requires phone number which I don't want to give out for this)
 - Use Coinbase Advanced
 - Use Polygon for data and Alpaca for execution of the transactions
 
-**Decision:**
+**Decision1:**
 Decided to go with the final option 
 
-**Why:**
+**Why1:**
 since I am already using polygon for the stocks and etfs. I just wanted to have more options in case polygon failed to work, but its not worth the effort of making new accounts and ensuring all locations work, and making a whole new plan of what libraries are needed, etc. Finally, using one data source for all bots will make it easier and I won't have to do any changes to build_features() for crypto as well. :D
+
+**Result1:**
+Pending system completion.
+
+## March 28, 2026 (Early Night) — Added sentiment fetcher 
+
+**Context1:**
+Need something to calculate sentiment
+
+**Options Considered1:**
+- Use Textblob
+- Use BERT
+- Use other complex models
+
+**Decision1:**
+Decided to go with the first option 
+
+**Why1:**
+Textblob takes 2 lines to setup, its instant, its decent accuracy (not as good as more complex models, but works well enough), is beginner friendly, and it runs locally on the model, without requiring additional hardware. The only limitations is that it doesn't understand financial jargon, and fails to consider context.
 
 **Result:**
 Pending system completion.
+
+
+
+**Context1:**
+What to return when there is no news?
+**Options Considered1:**
+- Return error
+- return positive
+- return negative
+- return neutral
+
+**Decision1:**
+Decided to go with the final option 
+
+**Why1:**
+Since there is no news, it is literally neutral, there is no feelings. It is possible there won't be no news so error is off the table, and its not necessarily positive or negative so I cannot do that.
+
+**Result1:**
+Pending system completion.
+
+
+**Context1:**
+What to apply in score column for rows
+
+**Options Considered1:**
+- Use different scores per row
+- Use scores only in first row
+- Use same score for all rows
+
+**Decision1:**
+Decided to go with the final option 
+
+**Why1:**
+Since the rows are talking about the same content, and we are inputting average score, we should use the same score for all rows.
+
+**Result:**
+Pending system completion.
+
+
+
+
