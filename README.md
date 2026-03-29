@@ -73,7 +73,7 @@ Not ready for set up yet
 ## Progress
 
 ### In Progress:
--data/kraken_fetcher.py- fetch historical and live data relating to crypto from kraken
+- data/kraken_fetcher.py- fetch historical and live data relating to crypto from kraken
 ### Completed Parts:
 - core/config.py - This provides the configuration of the system and what are the providers
 - core/logger.py - Creates database and provides functions to initialize the database tables, log each trade, and get past trades from database
