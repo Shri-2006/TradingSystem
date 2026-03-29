@@ -178,3 +178,59 @@ Pending system completion.
 
 
 
+## March 28, 2026 (Late Night) - Regime Detector
+
+**Context1:**
+Need to determine what to check first : volatile or trending
+**Options Considered1:**
+- Check trending first
+- check volatile first
+
+**Decision1:**
+Decided to go with the final option 
+
+**Why1:**
+If you check trending first, then if its trending because its volatile, thats bad. If its volatile, then you aren't trading.
+
+**Result:**
+Pending system completion.
+
+
+**Context2:**
+Where to allow stable, either in RANGING and TRENDING and /or VOLATILE
+**Options Considered2:**
+- Allow in all
+- Allow in first 2
+- Choose something else
+
+**Decision2:**
+Decided to go with the second option 
+
+**Why2:**
+stable cannot be in volatile because it is opposing the exact meaning of volatile. Ranging and trending however could fit within the expectations
+**Result:**
+Pending system completion.
+
+
+
+
+**Context2:**
+I need to decide which bots to allow in VOLATILE
+**Options Considered2:**
+- Allow  all
+- Allow in first 2
+- Allow only risky2
+- other choices
+**Decision2:**
+Decided to go with the third option 
+
+**Why2:**
+risky2 could be in volatile because crypto is inherently volatile, and doesn't have as much history as risky1. Additionally new coins could result in market change. However, stock markets are significantly more stable and as such should not be as volatile, thus risky1 is not allowed
+**Result:**
+Pending system completion.
+
+
+
+
+
+
