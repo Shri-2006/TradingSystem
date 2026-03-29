@@ -71,13 +71,16 @@ Not ready for set up yet
 ## Progress
 
 ### In Progress:
-- models/regime_detector.py - detect whether market is trending or ranging
+- models/train.py — train supervised ML models for stable and risky1
+
 ### Completed Parts:
 - core/config.py - This provides the configuration of the system and what are the providers
 - core/logger.py - Creates database and provides functions to initialize the database tables, log each trade, and get past trades from database
 - core/features.py- shared feature engineering for all 3 strategy bots. Computed rolling averages, RSI, momentum, Bollinger Bands, ATR, z-score, and volume indicators from raw data with open, high, low, close, volume data.
 - data/polygon_fetcher.py - fetch historical and live data relating to stocks and etfs from polygon.io, adding crypto support
 - data/sentiment_fetcher.py - fetch sentiment analysis from news articles using TextBlob and put into scores column in df
+- models/regime_detector.py - detect whether market is trending or ranging
+
 
 ### nice sources to read up on:
 https://www.investopedia.com/terms/b/bollingerbands.asp
