@@ -98,3 +98,23 @@ Stick to day data since we are sticking to free tier and minute/hour would requi
 **Decision 3:** Return with a warning because the user should be warned there is no data, but the bot shouldn't simply crash. The bot also shouldn't move on without informing user because something might be wrong
 
 **Result:** Still pending, we haven't tested yet
+
+## March 28, 2026 (Early Night) — Switched from Kraken to Polygon for Crypto
+
+**Context:**
+I am in a location that is geoblocked by Kraken at the time of this bot creation. Kraken was supposed to be the crypto checker for risky2
+
+**Options Considered:**
+- Lie about location to use Kraken
+- Use Gemini (requires phone number which I don't want to give out for this)
+- Use Coinbase Advanced
+- Use Polygon for data and Alpaca for execution of the transactions
+
+**Decision:**
+Decided to go with the final option 
+
+**Why:**
+since I am already using polygon for the stocks and etfs. I just wanted to have more options in case polygon failed to work, but its not worth the effort of making new accounts and ensuring all locations work, and making a whole new plan of what libraries are needed, etc. Finally, using one data source for all bots will make it easier and I won't have to do any changes to build_features() for crypto as well. :D
+
+**Result:**
+Pending system completion.
