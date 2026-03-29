@@ -1,9 +1,10 @@
 # Data sources 
 polygon-api-client
-
+textblob
 pandas
 numpy
 ta
+
 
 # ML provider
 scikit-learn
