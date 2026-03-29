@@ -72,3 +72,21 @@ def get_multiple_tickers(tickers,start,end,timespan="day"):
         if not df.empty: data[t]=df
         else: print(f"Warning, no data is in {t}, and will be skipped")
     return data
+
+
+#Adding crypto detector and crypto latest bar function
+def is_crypto(ticker):
+    """
+    Checks if a ticker is a crypto pair, if it is use X: prefix for polygon
+    e.g. X:BTCUSD, X:ETHUSD
+    """
+    return ticker.startswith("X:")
+
+def get_latest_price(ticker):
+    """
+    Works for both stocks and crypto, and Automatically handles the X: prefix for crypto
+    """
+    bar = get_latest_bar(ticker)
+    if bar is None:
+        return None
+    return bar['close'].iloc[0]
