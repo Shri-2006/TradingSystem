@@ -69,3 +69,32 @@ A way to transform the raw data of prices into understandable data that ML model
 **Results of March 28th 2026 Midday session**
 Feature engineering is now complete. Indicators that were implemented: rolling averages, RSI, momentum, Bollinger Bands, ATR, Z-score, and volume ratios. Tests have not yet happened because system is not yet ready for testing.
 
+## March 28, 2026 Late Evening - Polygon Data Fetcher
+
+**Context:**
+Needed a source of real etf and stock price data for the bots
+
+**Options Considered 1:** times to analyze
+- Default to minute
+- default to hours
+- default to day
+- default to other data
+
+**Decision 1**
+Stick to day data since we are sticking to free tier and minute/hour would require paid tier for Polygon.
+
+**Options Considered 2:** how recent should the lookback of the bar be
+- Fetch only today
+- Fetch 5 days
+- Fetch multiple days ago
+
+**Decisions 2**: Choose 5 days since that is close enough to be related but not too small that it will be completely disregarded by outliers
+
+**Options considered 3** Handling of empty data
+- Crash
+- Return with warning
+- Ignore and move on
+
+**Decision 3:** Return with a warning because the user should be warned there is no data, but the bot shouldn't simply crash. The bot also shouldn't move on without informing user because something might be wrong
+
+**Result:** Still pending, we haven't tested yet
