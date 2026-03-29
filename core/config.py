@@ -18,12 +18,13 @@ elif(PAPER_MODE==False):
 
 
 
-#Polygon details
-POLYGON_API_KEY=os.getenv("POLYGON_API_KEY")
+#Polygon details for stocks and etf
+POLYGON_API_KEY=os.getenv("POLYGON_API_KEY") #now will also be for crypto
 
-#KRAKEN for Crypto bot
-KRAKEN_API_KEY=os.getenv("KRAKEN_API_KEY")
-KRAKEN_SECRET_KEY=os.getenv("KRAKEN_SECRET_KEY")
+
+#KRAKEN for Crypto bot- Invalid due to geolocation restrictions.
+#KRAKEN_API_KEY=os.getenv("KRAKEN_API_KEY")
+#KRAKEN_SECRET_KEY=os.getenv("KRAKEN_SECRET_KEY")
 
 #Allocation of capital, basically starting funds
 
@@ -57,9 +58,9 @@ MAX_DRAWDOWN={
 STABLE_ASSETS = ["SPY", "QQQ", "AAPL", "MSFT", "DIA", "IWM"]
 #Risky1 will be modified by ML model so its dynamically changing
 RISKY1_ASSETS=[]
-#risky2 is in crypto and i don't reallyy know what to do for making it "risky"
-RISKY2_ASSETS=["BTC/USDT","ETH/USDT","SOL/USDT","AVAX/USDT","LINK/USDT","ADA/USDT","XRP/USDT","DOGE/USDT"]
-
+#risky2 is in crypto and i don't reallyy know what to do for making it "risky", the X is for polygon prefix of crypto
+RISKY2_ASSETS = ["X:BTCUSD","X:ETHUSD","X:SOLUSD","X:AVAXUSD","X:LINKUSD","X:ADAUSD","X:XRPUSD","X:DOGEUSD"
+]
 
 #Retraining of model occurances in days
 RETRAIN_INTERVAL_DAYS=14

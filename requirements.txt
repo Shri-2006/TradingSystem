@@ -1,6 +1,6 @@
 # Data sources 
 polygon-api-client
-ccxt
+
 pandas
 numpy
 ta
