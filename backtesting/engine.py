@@ -39,4 +39,19 @@ def run_backtest(df,model,strategy_name,init_cash=1000.00):#starting cash is 100
     return portfolio
 
 
-def run_backtest_multiple(tickers_data,model,strategy_name,init_cash)
+def run_backtest_multiple(tickers_data,model,strategy_name,init_cash=1000.00): #cash starts with 1000 to make it easier to see how well the model is doing 
+    """
+    Runs backtests across multiple tickers and combines the result per model
+    Tickers_data= dictionary of {ticker:featured df}
+    it will return a dictionary of {ticker:portfolio objects}
+    """
+    results={}
+    for ticker, df in tickers_data.items():
+        print(f"Backtesting {ticker} right now ...")
+        try:
+            portfolio=run_backtest(df,model,strategy_name,init_cash)
+            results[ticker]=portfolio
+        except Exception as e:
+            print(f"Warning: backtest failed for {ticker}-{e}")
+        return results
+
