@@ -234,3 +234,59 @@ Pending system completion.
 
 
 
+## March 29, 2026 (Late Night) - Stable and Risky1 Supervised Learning Model Trainer creation
+
+**Context1:**
+Need to choose something to train model
+**Options Considered1:**
+- XGBoost
+- LightGBM
+- CatBoost
+- Random Forest
+- Spark MLib GBT
+- AdaBooost
+- LinearBoost
+
+**Decision1:**
+Decided to go with XGBoost
+
+**Why1:**
+XGboost is a industry standard and is used often. LightGBM was also considered greatly as it is comparable, and occasionally even better than XGBoost. This was a coin toss because LightGBM was essentially the same based on what my use would be (Its not going to have a huge difference in speed due to what we are testing on-years of daily bars of data). CatBoost is for categorical, I am using numbers. Random Forest is weaker than XGBoost on financial data and tends to be more overfitting. Spark MLib GBT would require more computers but I am using a single VPS
+AdaBoost is slower, less accurate than XGBoost and older. I think XGBoost is considered the successor of AdaBoost? They both have Boost in their names
+LinearBoost: Finance is not necessarily linear and might not be as good a fit.
+**Result:**
+Pending system completion.
+
+
+**Context2:**
+Need to decide how to split data into testing and training
+**Options Considered2:**
+- Standard split of 80 and 20 (First learned during ESE 188 understanding machine learning class in freshmen year, then learned this at Incture in India internship)
+- 50 50
+- other proportions
+
+**Decision2:**
+Decided to go with standard split
+**Why2:**
+Keeps enough test data (20 for test) while giving 80 for training. Theres enough to train without giving away the answers of the 20 testing. 
+**Result:**
+Pending system completion.
+
+
+## March 29, 2026 (Late Night)— Per-Bot PAPER_MODE Flags
+
+**Context:**
+Bots need to be chosen when to be live or be paper traded because if its still be trained you don't want to use real money. 
+
+**Options Considered:**
+- One global PAPER_MODE flag for all bots
+- Per-bot PAPER_MODE dictionary
+
+**Decision:**
+-Per bot paper mode
+
+**Why:**
+Stable and risky1 use supervised ML which is easier to test and make it go live earlier. risky2 is RL and would need a lot more paper trading time to prove itself. A single change would make them all switch at the same time. Its best to avoid risking money when not needed. Also, risky1 should also take more time than stable due to its inherent nature of being risky.
+
+**Result:**
+Pending system completetion.
