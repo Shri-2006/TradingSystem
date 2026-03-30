@@ -53,5 +53,16 @@ def run_backtest_multiple(tickers_data,model,strategy_name,init_cash=1000.00): #
             results[ticker]=portfolio
         except Exception as e:
             print(f"Warning: backtest failed for {ticker}-{e}")
-        return results
+    return results
 
+def get_backtest_summary(results):
+    """
+    This will take the results from the dictionary and return a df summary. It compares all the tickers side by side and will be used by the dashboard in comparison table for easy understanding
+    """
+
+    rows=[]
+    for ticker, portfolio in results.items():
+        rows.append({
+            'ticker':ticker,'total_return':portfolio.total_return(), 'sharpe_ratio':portfolio.sharpe_ratio(),'max_drawdown':portfolio.max_drawdown(), 'total_trades':portfolio.trades.count()
+        })
+    return pd.DataFrame(rows).set_index('ticker')
