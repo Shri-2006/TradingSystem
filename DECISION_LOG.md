@@ -283,10 +283,45 @@ Bots need to be chosen when to be live or be paper traded because if its still b
 - Per-bot PAPER_MODE dictionary
 
 **Decision:**
--Per bot paper mode
+- Per bot paper mode
 
 **Why:**
 Stable and risky1 use supervised ML which is easier to test and make it go live earlier. risky2 is RL and would need a lot more paper trading time to prove itself. A single change would make them all switch at the same time. Its best to avoid risking money when not needed. Also, risky1 should also take more time than stable due to its inherent nature of being risky.
+
+**Result:**
+Pending system completetion.
+
+## March 29, 2026 (Late Night)— Retraining of supervised learning bots creation
+
+**Context:**
+What data to train on? 
+**Options Considered:**
+- Once a year
+- Once every two weeks
+- Some other time
+- 2 years
+
+**Decision:**
+- per 2 years
+
+**Why:**
+Train on 2 years training data because it is recent enough to be effective but not so recent that it will be entirely affected by outliers
+
+**Result:**
+Pending system completetion.
+
+
+**Context:**
+How to schedule retrain?
+**Options Considered:**
+- background scheduler
+- blocking scheduler
+
+**Decision:**
+- background
+
+**Why:**
+We don't really need to see the scheduling reset every single time we look because its not the main point of the program
 
 **Result:**
 Pending system completetion.

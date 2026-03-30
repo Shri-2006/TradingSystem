@@ -71,7 +71,7 @@ Not ready for set up yet
 ## Progress
 
 ### In Progress:
-- models/retrain.py — scheduled retraining every 14 days
+
 ### Completed Parts:
 - core/config.py - This provides the configuration of the system and what are the providers
 - core/logger.py - Creates database and provides functions to initialize the database tables, log each trade, and get past trades from database
@@ -80,6 +80,8 @@ Not ready for set up yet
 - data/sentiment_fetcher.py - fetch sentiment analysis from news articles using TextBlob and put into scores column in df
 - models/regime_detector.py - detect whether market is trending or ranging
 - models/train.py — XGBoost training pipeline for stable and risky1. It will fetches historical data, builds features, creates BUY/SELL labels, trains model, and saves the model as a .pkl file
+- models/retrain.py — scheduled retraining every 14 days
+
 
 
 ### nice sources to read up on:
