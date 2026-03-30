@@ -381,3 +381,24 @@ Pending system completetion.
 
 
 
+## March 30, 2026 — Hosting Decision
+
+**Context:**
+Need a place to host the bots 24/7
+
+**Options Considered:**
+- Oracle Cloud Free Tier (always free)
+- Microsoft Azure (free via student account, ~2+ years)
+- DigitalOcean ($6/mo)
+- EliteBook laptop (unreliable)
+- Google Cloud (free tier very low specs though)
+- AWS Free for 6 months. Also same problem regarding student plan as Azure
+
+**Decision:**
+Oracle Cloud Free Tier (ARM Ampere A1 instance)
+
+**Why:**
+Oracle's ARM instance gives 4 CPUs and 24GB RAM completely free forever which is significantly better specs than Azure's free student tier for a compute-heavy workload like this. Azure student credits expire, Oracle's always-free tier does not. Azure kept as a backup option if Oracle signup fails. This project I intend to keep running for the foreseable future after all.
+
+**Result:**
+Pending — deployment happens later
