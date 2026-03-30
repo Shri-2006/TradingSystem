@@ -325,3 +325,59 @@ We don't really need to see the scheduling reset every single time we look becau
 
 **Result:**
 Pending system completetion.
+
+
+## March 30, 2026 — Building the backtesters
+
+**Context:**
+need to decide how much fees and slippage will happen
+**Options Considered:**
+- 0
+- 0.1%
+- some other percentage
+
+**Decision:**
+- .1%
+
+**Why:**
+.1% is about the amount of fees that Alpaca will do during the trades. Slippage of .1% is also in the reasonable range
+**Result:**
+Pending system completetion.
+
+
+**Context:**
+there might be errors when running a ticker
+**Options Considered:**
+- ignore error
+- try catch error
+- throw error
+- crash
+
+**Decision:**
+- try catch
+
+**Why:**
+Even if one ticker fails, some of the other tickers might still be fine. At least this way we know which ticker is broken and the other tickers still go through
+
+**Result:**
+Pending system completetion.
+
+
+
+**Context:**
+how much initial cash in test
+**Options Considered:**
+-  same amount as actual models
+- 1000
+- some other amount
+
+**Decision:**
+- 1000
+
+**Why:**
+1000 is a nice number to easily see how well the model is doing and to compare it with other options
+**Result:**
+Pending system completetion.
+
+
+
