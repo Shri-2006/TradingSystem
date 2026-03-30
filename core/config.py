@@ -3,17 +3,18 @@ from dotenv import load_dotenv
 load_dotenv()
 
 #Paper trading mode, false means its actual money, true when paper trading
-PAPER_MODE=True
+PAPER_MODE={
+    "stable":True,#flip to false to make stable live
+    "risky1":True,#flip to false to make risky1live
+    "risky2":True#flip to false to make risky2 live, like will take more time since its RL experimental
+}
 
 #Alpaca Details
 ALPACA_API_KEY=os.getenv("ALPACA_API_KEY")
 ALPACA_SECRET_KEY=os.getenv("ALPACA_SECRET_KEY")
 #if PAPER_MODE=true then this is active, else its to live url
-if(PAPER_MODE==True):
-    ALPACA_BASE_URL ="https://paper-api.alpaca.markets"
-
-elif(PAPER_MODE==False):
-    ALPACA_BASE_URL="https://api.alpaca.markets"
+ALPACA_PAPER_URL ="https://paper-api.alpaca.markets"
+ALPACA_LIVE_URL="https://api.alpaca.markets"
 
 
 
