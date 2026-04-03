@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  trading_bots:
+    build: .
+    env_file:
+      - .env
+    volumes:
+      - ./trades.db:/app/trades.db
+#Transfer trades from the container to trades in dashboard container so they have the same file
+    restart: unless-stopped
+
+  dashboard:
+    build: .
+    command: streamlit run dashboard/streamlit_app.py --server.port 8501 --server.address 0.0.0.0
+    env_file:
+      - .env
+    volumes:
+      - ./trades.db:/app/trades.db
+    ports:
+      - "8501:8501"
+#port on left is actual machine/server port, right side is port in docker
+    restart: unless-stopped

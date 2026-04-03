@@ -1,0 +1,9 @@
+.env
+*.pkl
+*.zip
+*.db
+__pycache__/
+.git/
+backtesting/results/
+.venv/
+venv/
