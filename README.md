@@ -71,7 +71,6 @@ Not ready for set up yet
 ## Progress
 
 ### In Progress:
-- dashboard/compare.py - terminal comparison table for all strategies
 ### Completed Parts:
 - core/config.py - This provides the configuration of the system and what are the providers
 - core/logger.py - Creates database and provides functions to initialize the database tables, log each trade, and get past trades from database
@@ -87,6 +86,7 @@ Not ready for set up yet
 - strategies/stable.py - Creating the strategy for the stable trading bot (one of the biggest files too actually)
 - strategies/risky1.py - Creating the strategy for the risky trading bot (one of the second biggest files)
 - paper_trading/alpaca_paper.py - centralized the Alpaca API wrapper for all strategies. Handles paper/live switching per bot, order submission, position checking, and kill switch execution
+- dashboard/compare.py - terminal comparison table for all strategies
 
 ### nice sources to read up on:
 https://www.investopedia.com/terms/b/bollingerbands.asp
