@@ -637,4 +637,34 @@ Some failed attempts actually was usng patch() to mock the restclient, which fai
 4/4,8/8, and 16/16 tests passed
 
 
+## April 3, 2026 — run.py System Launcher
 
+**Context:**
+Need a single entry point to start the entire system
+
+**Options Considered 1:** How to run multiple bots
+- Run one after another
+- Run in separate threads at same time
+- Run in separate processes
+
+**Decision 1:** Threads
+**Why:** one after another would mean stable bot runs forever in its while True loop and risky1 never starts. Threads let both run simultaneously sharing the same memory and timing. Separate processes would be overkill for this use case and waste resources.
+
+**Result:** Pending — not yet deployed
+
+---
+
+## April 3, 2026 — Dashboard Design
+
+**Context:**
+Need a way to visualize strategy performance
+
+**Options Considered:**
+- Terminal only (compare.py)
+- Web dashboard (Streamlit)
+- Both
+
+**Decision:** Both
+**Why:** Terminal is fast for debugging during development in case someone who doesn't know the code wants to attempt editing it. Streamlit gives a live URL for the resume and shows users a real deployed product that they can understand, even without being programmer geniuses. Capital allocation pulled directly from config.py so dashboard always reflects actual settings without hardcoding the details each time.
+ 
+**Result:** Pending — not yet deployed
