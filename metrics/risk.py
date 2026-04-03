@@ -1,11 +1,37 @@
 import numpy as np
 import pandas as pd
 
-def sharpe_ratio(returns,risk_free_rate=0.04):
+
+def get_risk_free_rate():
     """
-    Calculates the annualized sharpe ratio. Returns is pandas series of daily returnss, risk_free_rate is the annual risk free rate, default is 4%, the current US treasury (0.04). 
+    this will give the current us 10 year treasury yield from polygon.io. If the fetch fails it falls back to 4% as a default. 10 year industry is chosen becaause it is the industry standard of risk-free rates
+    """
+    try:
+        from polygon import RESTClient
+        from core.config import POLYGON_API_KEY
+        client=RESTClient(api_key=POLYGON_API_KEY)
+        #The ticker is I:TNX for polygon 10 year treasury yield
+        data=client.get_last_trade("I:TNX")
+        rate=data.price/100
+        print(f"Current risk-free rate that is fetched is : {data.price:.2f}%")
+        return rate
+    except Exception as e:
+        print(f"WARNING AND ERROR, falling back to default rate of 4% since treasury rate could not be fetched \n\n error code is: {e}")
+        return 0.04
+    
+
+
+
+
+
+def sharpe_ratio(returns,risk_free_rate=None):
+    """
+    Calculates the annualized sharpe ratio. Returns is pandas series of daily returnss, risk_free_rate is the annual risk free rate, default is 4%, will change to live us treasury if working right. 
     The higher the ratio, the better. If above 1, it is good, above 2 is amazing, and above that is insanely good
     """
+    if (risk_free_rate is None):
+        risk_free_rate=get_risk_free_rate()
+    
     daily_return_free=risk_free_rate/252 #divided by 252 business days per year
     excess=returns-daily_return_free
     if(excess.std()==0):
