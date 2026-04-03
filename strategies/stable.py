@@ -105,4 +105,36 @@ def trade_ticker(api,ticker):
         #in other cases simply hold the pos
         print(f"HOLD{ticker}, no action needed rn")
 
-        
+
+
+
+def run():
+    """ 
+    This is the main loop for the stable strategy, and it runs continusly. it will check each ticker every 60 seconds, and runs continuosly. It iwll be called from run.py when the system boots up
+    """
+    api=get_api()
+    print("Stable bot started now...")
+    while True:
+        try:
+            #check kill switch before anything else
+            if check_kill_switch(api):
+                print("Kill switch has stopped stable bot")
+                break
+            #running trading cycle per each ticker (assets)
+            for ticker in STABLE_ASSETS:
+                try:
+                    trade_ticker(api,ticker)
+                except Exception as e:
+                    print(f"error trading this asset: {ticker}: {e}")
+                    continue
+            print(f"cycle has complteded at {datetime.now()}-time to sleep for 1 min")
+            time.sleep(60)
+        except KeyboardInterrupt:
+            print("Stable bot was manually stopped by user")
+            break
+        except Exception as e:
+            print(f"there was an unexpected error : {e}, will restart cycle in 60 seconds")
+            time.sleep(60)
+    
+if __name__=="__main__":
+    run();
