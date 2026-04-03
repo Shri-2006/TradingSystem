@@ -34,7 +34,7 @@ def sharpe_ratio(returns,risk_free_rate=None):
     
     daily_return_free=risk_free_rate/252 #divided by 252 business days per year
     excess=returns-daily_return_free
-    if(excess.std()==0):
+    if(excess.std()<1e-10):
         return 0.00000000000000000#muscle spasm hehe
     return(excess.mean()/excess.std())*np.sqrt(252)#annualize sharpe ratio through sqrt(252)* mean/std of excess returns
 
