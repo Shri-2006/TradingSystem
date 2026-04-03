@@ -568,3 +568,40 @@ return
 after momentum exit it won't do anything for this run. 
 **Result:**
 Pending — deployment happens later
+
+
+
+
+## April 3, 2026 - how many times to call alpaca
+
+**Context:**
+need to call alpaca, how many times?
+**Options Considered:**
+- once for all strategies
+- directly each strategy
+- something else
+
+**Decision:**
+once
+**Why:**
+simplifies the project and will still work just fine
+**Result:**
+Pending — deployment happens later
+
+
+
+## April 3, 2026 - why does risky2 ignore market check?
+
+**Context:**
+stable and risky1 must check for if the market is open or close. what about risky2
+**Options Considered:**
+- check
+- ignore
+- something else
+
+**Decision:**
+ignore
+**Why:**
+the market is open 24/7 365 days a year. it never closes unless the market has failed
+**Result:**
+Pending — deployment happens later
