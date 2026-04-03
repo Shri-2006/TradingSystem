@@ -71,8 +71,7 @@ Not ready for set up yet
 ## Progress
 
 ### In Progress:
-- backtesting/run_backtest.py — runs backtests across all strategies
-
+- strategies/stable.py - Creating the strategy for the stable trading bot (one of the biggest files too actually)
 ### Completed Parts:
 - core/config.py - This provides the configuration of the system and what are the providers
 - core/logger.py - Creates database and provides functions to initialize the database tables, log each trade, and get past trades from database
@@ -83,8 +82,8 @@ Not ready for set up yet
 - models/train.py — XGBoost training pipeline for stable and risky1. It will fetches historical data, builds features, creates BUY/SELL labels, trains model, and saves the model as a .pkl file
 - models/retrain.py — scheduled retraining every 14 days
 - backtesting/engine.py — VectorBT backtesting engine, generates BUY/SELL signals from ML model, runs backtest with 0.1% fees and slippage, returns total return, Sharpe ratio, max drawdown
-
-
+- backtesting/run_backtest.py — runs backtests across all strategies
+- metrics/risk.py — Sharpe ratio (with live US Treasury rate fetch),max drawdown, win/loss ratio, compute_all_metric adn wrapper
 
 ### nice sources to read up on:
 https://www.investopedia.com/terms/b/bollingerbands.asp

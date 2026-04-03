@@ -402,3 +402,78 @@ Oracle's ARM instance gives 4 CPUs and 24GB RAM completely free forever which is
 
 **Result:**
 Pending — deployment happens later
+
+
+
+## April 3, 2026 - Treasury 10 year metric choice
+
+**Context:**
+Needed to choose a rate for comparison
+
+**Options Considered:**
+- risky rate
+- non_risky rate
+- 10 year treasury safe
+
+**Decision:**
+10 year treasury safe rate
+**Why:**
+The 10 year treasury rate is considered a safe investment that will not fail.
+**Result:**
+Pending — deployment happens later
+
+
+## April 3, 2026 - Fallback
+
+**Context:**
+Needed to choose a rate for fallback in case live fetch fails
+
+**Options Considered:**
+- 0%
+- 4%
+- 10%
+
+**Decision:**
+4%
+**Why:**
+The current rate is about 4%, so it will fit the current climate.
+
+**Result:**
+Pending — deployment happens later
+
+
+## April 3, 2026 - Amount of trading days
+
+**Context:**
+Needed to choose amount of days to trade
+
+**Options Considered:**
+- 365
+- 252
+- 10
+- other
+
+**Decision:**
+252 
+**Why:**
+252 days is considered the industry standard of business days in the United States
+**Result:**
+Pending — deployment happens later
+
+
+
+## April 3, 2026 - How to get treasury rate
+
+**Context:**
+needed to have a rate for metrics
+**Options Considered:**
+- live fetch
+- fixed hardcoded fetch
+- live fetch, then if that fails do hardcoded
+
+**Decision:**
+Last option
+**Why:**
+Live fetch would be more accurate to what is being chosen, and the fallback is reasonable and in case live fails.
+**Result:**
+Pending — deployment happens later
