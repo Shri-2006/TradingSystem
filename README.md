@@ -71,7 +71,7 @@ Not ready for set up yet
 ## Progress
 
 ### In Progress:
-
+- dashboard/compare.py - terminal comparison table for all strategies
 ### Completed Parts:
 - core/config.py - This provides the configuration of the system and what are the providers
 - core/logger.py - Creates database and provides functions to initialize the database tables, log each trade, and get past trades from database

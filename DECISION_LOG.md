@@ -605,3 +605,36 @@ ignore
 the market is open 24/7 365 days a year. it never closes unless the market has failed
 **Result:**
 Pending — deployment happens later
+
+
+
+## April 3, 2026 - Testing Suite
+
+**Context:**
+Need to check the core functions without using the actual api keys
+**Options Considered:**
+- dont test
+- use real api keys
+- use magicmock and dummy env var
+
+**Decision:**
+use dummy env vars and magicmock since magicmock fakes the external dependencies 
+**Why:**
+(was necessary cause polygon clietn would crash at import without a key during the tests, and i can't really use the real env key there)**Result:**
+Pending — deployment happens later
+Some failed attempts actually was usng patch() to mock the restclient, which failed because polygon would initialize the client when importing, then patch would have come, making patch unable to stop it. Thus i set a dummy env var instead
+
+
+**Options Considered 2:** What to test
+- Skip edge cases
+- Test only happy path
+- Test edge cases too (empty returns, flat returns, etc.)
+
+**Decision 2:** Test edge cases
+**Why:** The flat returns test caught a real floating point bug in sharpe_ratio() — excess.std() was never exactly 0.0 due to floating point precision. Fixed by checking < 1e-10 instead of if it is 0. Tests proved their value there by providing a bug.
+
+**Result**
+4/4,8/8, and 16/16 tests passed
+
+
+
