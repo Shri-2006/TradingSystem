@@ -529,3 +529,42 @@ how many try in run()?
 each ticker may have its own error, if so it will simply go to the rest.. however, the user might want to manually stop, thus resulting in keyboardinterrup also, if another error happened for the entire thing it owuld be stored as e and mentioned.
 **Result:**
 Pending — deployment happens later
+
+
+
+
+
+## April 3, 2026 - When to put momemntum check in risky1.py
+
+**Context:**
+need to decide when to check for momentum exit
+**Options Considered:**
+- before ml signal check
+- during ml signal check
+- after check
+
+**Decision:**
+before ml signal check
+**Why:**
+momentum exit doesn't rely on ml signal check, and it would be faster and save more resources
+**Result:**
+Pending — deployment happens later
+
+
+
+
+## April 3, 2026 - when to return
+
+**Context:**
+momentum sell in riskyy1 was just completed, if it says to momentum exit what to do
+**Options Considered:**
+- return now
+- ignore
+- something else
+
+**Decision:**
+return
+**Why:**
+after momentum exit it won't do anything for this run. 
+**Result:**
+Pending — deployment happens later
