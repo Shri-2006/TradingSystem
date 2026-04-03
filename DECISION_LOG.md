@@ -477,3 +477,55 @@ Last option
 Live fetch would be more accurate to what is being chosen, and the fallback is reasonable and in case live fails.
 **Result:**
 Pending — deployment happens later
+
+## April 3, 2026 - time to sleep between cycles
+
+**Context:**
+deciding how logn to wait per cycle
+**Options Considered:**
+- no sleep
+- one min
+- one hour
+- some other time
+
+**Decision:**
+one min
+**Why:**
+avoid rate limiting while not taking too long
+**Result:**
+Pending — deployment happens later
+
+## April 3, 2026 - when to place kill swithc
+
+**Context:**
+need to decide when to check kill switch
+**Options Considered:**
+- before trading
+- after trading
+- during trading
+
+**Decision:**
+before trading
+**Why:**
+if the kill switch is active before the model runs, then the market is extradonarily bad and shouldn't buy right now
+**Result:**
+Pending — deployment happens later
+
+
+## April 3, 2026 - try catch in the run logic of stable
+
+**Context:**
+how many try in run()?
+
+**Options Considered:**
+- one
+- 0
+- 2
+- more
+
+**Decision:**
+2
+**Why:**
+each ticker may have its own error, if so it will simply go to the rest.. however, the user might want to manually stop, thus resulting in keyboardinterrup also, if another error happened for the entire thing it owuld be stored as e and mentioned.
+**Result:**
+Pending — deployment happens later
