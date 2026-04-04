@@ -59,18 +59,18 @@ def get_latest_bar(ticker, timespan="day"):
     #return only the most recent row
     return df.iloc[[-1]]
 
-def get_multiple_tickers(tickers,start,end,timespan="day"):
-    """
-    Fetch historical data for the given list of tickers. Returns a dictionary where each frame is a ticker and the value is in the dataframe.
-    tickers example is ["SPY","QQQ","AAPL"]
-    """
-    #initalize data as blank 
-    data={}
+import time
+#adding a sleep function
+def get_multiple_tickers(tickers, start, end, timespan="day"):
+    data = {}
     for t in tickers:
         print(f"Fetching ticker {t}...")
-        df=get_historical_data(t,start,end,timespan)
-        if not df.empty: data[t]=df
-        else: print(f"Warning, no data is in {t}, and will be skipped")
+        df = get_historical_data(t, start, end, timespan)
+        if not df.empty: 
+            data[t] = df
+        else: 
+            print(f"Warning, no data is in {t}, and will be skipped")
+        time.sleep(12)  # 12 second delay to avoid rate limiting
     return data
 
 
