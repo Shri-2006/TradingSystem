@@ -7,21 +7,22 @@ client = RESTClient(api_key=POLYGON_API_KEY)
 def get_sentiment(ticker, limit=10):
     """
     Fetches the most recent news headlines for the given ticker and scores a sentiment for it.
-    Tickers are things like AAPL or SPY
-    limit: how many articles to analyze
-    returns: average sentiment scores will be between -1.0 and 1.0, with -1 being very negative sentiment, 0 neutral, and 1 as very positive
-
     """
-
-    news= client.list_ticker_news(ticker,limit=limit)
-    scores=[]#will be filled later
-    for article in news:
-        headline=article.title
-        score=TextBlob(headline).sentiment.polarity
-        scores.append(score)
-    if not scores:
-        return 0.0 #should no news be found, consider it as neutral
-    return sum(scores)/len(scores)#return the average score
+    try:
+        import time
+        time.sleep(12)  # avoid rate limiting
+        news = client.list_ticker_news(ticker, limit=limit)
+        scores = []
+        for article in news:
+            headline = article.title
+            score = TextBlob(headline).sentiment.polarity
+            scores.append(score)
+        if not scores:
+            return 0.0
+        return sum(scores) / len(scores)
+    except Exception as e:
+        print(f"Warning: sentiment fetch failed for {ticker}, using neutral — {e}")
+        return 0.0  # fall back to neutral if rate limited
 def get_sentiment_label(score):
     """
     Basically converts the numeric score to a readable label
