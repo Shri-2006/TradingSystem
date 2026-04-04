@@ -57,7 +57,7 @@ def get_latest_bar(ticker, timespan="day"):
         print(f"Warning, No data is in df for {ticker}")
         return None
     #return only the most recent row
-    return df.iloc[[-1]]
+    return df
 
 import time
 #adding a sleep function
