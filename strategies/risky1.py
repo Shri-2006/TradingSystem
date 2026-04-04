@@ -13,6 +13,7 @@ from models.regime_detector import get_regime_for_strategy
 from models.train import load_model
 from metrics.risk import compute_all_metrics
 import alpaca_trade_api as tradeapi
+from paper_trading.alpaca_paper import get_api, is_market_open
 
 #loading model only once to keep same model for each trade in single session, save memory (analysis of algorithms thank you) and to improve speed to avoid reinitializing model from disk each trade
 
@@ -120,14 +121,20 @@ def run():
     """ 
     This is the main loop for the risky1 strategy, and it runs continusly. it will check each ticker every 60 seconds, and runs continuosly. It iwll be called from run.py when the system boots up
     """
-    api=get_api()
-    print("Risky1 bot started now...")
+    api = get_api()
+    print("Stable bot started now...")
     while True:
         try:
-            #check kill switch before anything else
             if check_kill_switch(api):
-                print("Kill switch has stopped risky1 bot")
+                print("Kill switch has stopped stable bot")
                 break
+
+            # Check if market is open before trading
+            if not is_market_open("stable"):
+                print("Market is closed — sleeping 60 seconds")
+                time.sleep(60)
+                continue  # skip to next cycle
+
             #running trading cycle per each ticker (assets)
             for ticker in RISKY1_ASSETS:
                 try:
