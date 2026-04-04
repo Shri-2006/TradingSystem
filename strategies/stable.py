@@ -127,6 +127,7 @@ def run():
                 except Exception as e:
                     print(f"error trading this asset: {ticker}: {e}")
                     continue
+                time.sleep(20)
             print(f"cycle has complteded at {datetime.now()}-time to sleep for 1 min")
             time.sleep(60)
         except KeyboardInterrupt:
