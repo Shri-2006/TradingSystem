@@ -668,3 +668,29 @@ Need a way to visualize strategy performance
 **Why:** Terminal is fast for debugging during development in case someone who doesn't know the code wants to attempt editing it. Streamlit gives a live URL for the resume and shows users a real deployed product that they can understand, even without being programmer geniuses. Capital allocation pulled directly from config.py so dashboard always reflects actual settings without hardcoding the details each time.
  
 **Result:** Pending — not yet deployed
+
+
+
+
+## April 3, 2026 — DevOps Time!
+
+**Context:**
+Need to make system reproducible, testable, and deployable for other people without significant modifications and bug testing
+
+**Options Considered 1:** Containerization
+- No Docker, just run Python directly on server
+- Docker
+- something else
+
+**Decision 1:** Docker
+**Why:** Guarantees same environment on Oracle Cloud as locally. No "works on my machine" problems. Anyone can clone and run docker-compose up to start the full system.
+
+**Options Considered 2:** CI/CD
+- Manually run tests before pushing
+- GitHub Actions auto-run on every push
+- other
+
+**Decision 2:** GitHub Actions
+**Why:** Automated tests catch bugs before they reach the live system.Easier to check. Tests now run on every push to main with dummy API keys so no credentials are exposed.
+
+**Result:** Docker setup complete, CI passing 16/16 on push
