@@ -71,6 +71,7 @@ Not ready for set up yet
 ## Progress
 
 ### In Progress:
+- Oracle Cloud deployment — waiting on ARM capacity availability
 
 ### Completed Parts:
 - core/config.py - This provides the configuration of the system and what are the providers
@@ -90,6 +91,9 @@ Not ready for set up yet
 - dashboard/compare.py - terminal comparison table for all strategies
 - dashboard/streamlit_app.py - live Streamlit web dashboard with strategy comparison table, recent trades, capital allocation pulled from config.py
 - run.py - unified system launcher
+- Dockerfile — containerizes the full system
+- docker-compose.yml — runs bots + Streamlit dashboard together
+- .github/workflows/test.yml — GitHub Actions CI, auto-runs 16 tests on every push to main
 
 ### nice sources to read up on:
 https://www.investopedia.com/terms/b/bollingerbands.asp
