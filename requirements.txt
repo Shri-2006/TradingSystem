@@ -26,4 +26,5 @@ APScheduler
 python-dotenv
 
 # Testing of system
-pytestalpaca-trade-api
+pytest
+alpaca-trade-api
