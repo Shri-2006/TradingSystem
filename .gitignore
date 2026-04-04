@@ -28,3 +28,6 @@ backtesting/results/
 
 # VS Code
 .vscode/
+
+# Oracle deployment script
+get_oracle.py
