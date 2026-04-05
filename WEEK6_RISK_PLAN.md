@@ -90,3 +90,24 @@ At the end, I want the system to be something I can describe like this:
 - controlled position sizing
 - strategy-specific risk tolerance
 - room for future dynamic risk reduction
+
+
+
+
+Clarification on project order:
+
+When I say I want to implement the RL bot before the full risk-management upgrade, I mean I want to first create the RL bot’s code architecture and integrate it into the system, not actually run/train/deploy it yet.
+
+So please help me design the RL bot in a way that is compatible with future risk controls.
+
+Requirements:
+- The RL bot should fit into the same overall trading system as the stable and risky1 bots
+- Its design should support future portfolio-level drawdown protection
+- Its design should support future per-trade stop-loss logic
+- Its design should support future position sizing rules
+- I do not need the full risk-management implementation yet, but I do want clean hooks/interfaces for it
+
+Please guide me so that:
+1. I implement the RL bot architecture first
+2. I avoid hardcoding things that will make risk management harder later
+3. After the RL bot structure is complete, I can then add a shared risk-management layer across all bots
