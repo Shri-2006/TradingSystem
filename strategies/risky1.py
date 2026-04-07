@@ -105,7 +105,7 @@ def trade_ticker(api,ticker):
                 print(f"Skipping {ticker} — order value ${order_value:.2f} below $1 minimum")
                 return
             api.submit_order(symbol=ticker, qty=qty, side='buy', type='market', time_in_force='day')
-            log_trade("stable", ticker, "BUY", price, qty, reason="ML signals to Buy and the regime is favorable")
+            log_trade("risky", ticker, "BUY", price, qty, reason="ML signals to Buy and the regime is favorable")
             print(f"Buy {qty}{ticker} @ ${price}")
 
         if qty>0:
@@ -130,15 +130,15 @@ def run():
     This is the main loop for the risky1 strategy, and it runs continusly. it will check each ticker every 60 seconds, and runs continuosly. It iwll be called from run.py when the system boots up
     """
     api = get_api()
-    print("Stable bot started now...")
+    print("Risky bot started now...")
     while True:
         try:
             if check_kill_switch(api):
-                print("Kill switch has stopped stable bot")
+                print("Kill switch has stopped Risky bot")
                 break
 
             # Check if market is open before trading
-            if not is_market_open("stable"):
+            if not is_market_open("risky"):
                 print("Market is closed — sleeping 60 seconds")
                 time.sleep(60)
                 continue  # skip to next cycle
