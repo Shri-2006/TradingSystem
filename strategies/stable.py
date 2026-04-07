@@ -91,12 +91,15 @@ def trade_ticker(api,ticker):
     max_pos=MAX_POSITION_SIZE["stable"]
     if prediction==1 and current_pos<max_pos:
         #if predicition is 1 and pos is less than max, buy
-        qty=round((max_pos-current_pos)/price,4)
-        if qty>0:
-            api.submit_order(symbol=ticker,qty=qty,side='buy',type='market',time_in_force='day')
-            log_trade("stable",ticker,"BUY",price,qty,reason="ML signals to Buy and the regime is favorable")
+        qty = round((max_pos - current_pos) / price, 4)
+        if qty > 0:
+            order_value = qty * price
+            if order_value < 1.0:
+                print(f"Skipping {ticker} — order value ${order_value:.2f} below $1 minimum")
+                return
+            api.submit_order(symbol=ticker, qty=qty, side='buy', type='market', time_in_force='day')
+            log_trade("stable", ticker, "BUY", price, qty, reason="ML signals to Buy and the regime is favorable")
             print(f"Buy {qty}{ticker} @ ${price}")
-
     elif prediction ==0 and current_pos>0:
         #if prediciton is 0 and pos is greater than 0, SELL NOW
         api.close_position(ticker)
