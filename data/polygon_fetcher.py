@@ -48,7 +48,7 @@ def get_latest_bar(ticker, timespan="day"):
 
     #set dates
     end=datetime.today().strftime('%Y-%m-%d')#/ doesn't work idk why, prob a python thing
-    start=(datetime.today()-timedelta(days=90)).strftime('%Y-%m-%d')
+    start=(datetime.today()-timedelta(days=200)).strftime('%Y-%m-%d')
     #set the dataframe with historical data
     df=get_historical_data(ticker,start,end,timespan)
 
