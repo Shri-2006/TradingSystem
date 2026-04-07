@@ -54,7 +54,8 @@ def get_current_position(api,ticker):
     try:
         position=api.get_position(ticker)
         return float(position.market_value)
-    except:
+    except Exception as e:
+        print(f"Error {e}");
         return 0.0#no position held
     
 
@@ -105,7 +106,7 @@ def trade_ticker(api,ticker):
                 print(f"Skipping {ticker} — order value ${order_value:.2f} below $1 minimum")
                 return
             api.submit_order(symbol=ticker, qty=qty, side='buy', type='market', time_in_force='day')
-            log_trade("risky", ticker, "BUY", price, qty, reason="ML signals to Buy and the regime is favorable")
+            log_trade("risky1", ticker, "BUY", price, qty, reason="ML signals to Buy and the regime is favorable")
             print(f"Buy {qty}{ticker} @ ${price}")
 
         if qty>0:
@@ -138,7 +139,7 @@ def run():
                 break
 
             # Check if market is open before trading
-            if not is_market_open("risky"):
+            if not is_market_open("risky1"):
                 print("Market is closed — sleeping 60 seconds")
                 time.sleep(60)
                 continue  # skip to next cycle
