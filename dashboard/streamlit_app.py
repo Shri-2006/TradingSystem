@@ -60,14 +60,31 @@ else:
 
 #Allocation of funds
 st.header("Capital Allocation")
-col1,col2,col3=st.columns(3)
-with col1:
-    st.metric(label="Stable Bot",value=f"${CAPITAL['stable']:,.2f}",delta="Grid Trading")
-with col2:
-    st.metric(label="Risky Bot 1", value=f"${CAPITAL['risky1']:,.2f}",delta="Momentum")
-with col3:
-    st.metric(label="Risky Bot 2",value=f"${CAPITAL['risky2']:,.2f}", delta="RL Agent")
 
+from paper_trading.alpaca_paper import get_api
+try:
+    api = get_api("stable")
+    account = api.get_account()
+    portfolio_value = float(account.portfolio_value)
+    cash = float(account.cash)
+    invested = portfolio_value - cash
+
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.metric(label="Portfolio Value", value=f"${portfolio_value:,.2f}")
+    with col2:
+        st.metric(label="Cash Available", value=f"${cash:,.2f}")
+    with col3:
+        st.metric(label="Invested", value=f"${invested:,.2f}")
+except Exception as e:
+    # Fallback to config values if Alpaca unavailable
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.metric(label="Stable Bot", value=f"${CAPITAL['stable']:,.2f}", delta="Grid Trading")
+    with col2:
+        st.metric(label="Risky Bot 1", value=f"${CAPITAL['risky1']:,.2f}", delta="Momentum")
+    with col3:
+        st.metric(label="Risky Bot 2", value=f"${CAPITAL['risky2']:,.2f}", delta="RL Agent")
 
 
 #foolter of page
