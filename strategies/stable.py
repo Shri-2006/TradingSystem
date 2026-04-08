@@ -5,6 +5,7 @@ import time
 #import pandas as pd
 from datetime import datetime
 #from core.config import (STABLE_ASSETS,MAX_POSITION_SIZE,MAX_DRAWDOWN,CAPITAL,PAPER_MODE,ALPACA_PAPER_URL,ALPACA_LIVE_URL )
+from core.config import (STABLE_ASSETS, MAX_POSITION_SIZE, MAX_DRAWDOWN, CAPITAL)
 from core.logger import log_trade
 from core.features import build_features
 from data.polygon_fetcher import get_latest_bar
