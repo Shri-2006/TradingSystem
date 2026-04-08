@@ -58,3 +58,9 @@ Only implement if TextBlob sentiment proves insufficient.
 
 ## Bot 4 & 5
 - Implement a RL version of stable and risky1 for stocks and etfs
+
+## Bot 6
+- Implement a supervised learning version of risky2 (for crypto)
+
+## Bot 7,8,9
+-Implement a unsupervised learning version of stable,risky1, risky2
