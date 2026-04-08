@@ -1,35 +1,35 @@
 ## This will fetch latest price data from polygon, build_features(), check regime (if volatile it will not do it), load the ml model to predict buy/sell/hold. If buy, check to avoid MAX_Position_size, place grid of buy orders around current price. If sell, it will close the position, and it will check the kill switch where if drawdown supersedes 15% it will stop everything to prevent extreme loss. It will also log every trade to SQLite.
 
-import os
+#import os
 import time
-import pandas as pd
+#import pandas as pd
 from datetime import datetime
-from core.config import (RISKY1_ASSETS,MAX_POSITION_SIZE,MAX_DRAWDOWN,CAPITAL,PAPER_MODE,ALPACA_PAPER_URL,ALPACA_LIVE_URL )
+#from core.config import (RISKY1_ASSETS,MAX_POSITION_SIZE,MAX_DRAWDOWN,CAPITAL,PAPER_MODE,ALPACA_PAPER_URL,ALPACA_LIVE_URL )
 from core.logger import log_trade
 from core.features import build_features
 from data.polygon_fetcher import get_latest_bar
 from data.sentiment_fetcher import add_sentiment_to_df
 from models.regime_detector import get_regime_for_strategy
 from models.train import load_model
-from metrics.risk import compute_all_metrics
-import alpaca_trade_api as tradeapi
+#from metrics.risk import compute_all_metrics
+#import alpaca_trade_api as tradeapi
 from paper_trading.alpaca_paper import get_api, is_market_open
 
 #loading model only once to keep same model for each trade in single session, save memory (analysis of algorithms thank you) and to improve speed to avoid reinitializing model from disk each trade
 
 model=load_model("risky1_model.pkl")
 #Alpaca connection (paper vs live)
-if PAPER_MODE["risky1"]:
-    BASE_URL=ALPACA_PAPER_URL
-else:
-    BASE_URL=ALPACA_LIVE_URL
+# if PAPER_MODE["risky1"]:
+#     BASE_URL=ALPACA_PAPER_URL
+# else:
+#     BASE_URL=ALPACA_LIVE_URL
 
-def get_api():
-    """
-    will confirm and return the alpaca api conenctions.
-    """
-    from core.config import ALPACA_API_KEY, ALPACA_SECRET_KEY
-    return tradeapi.REST(ALPACA_API_KEY,ALPACA_SECRET_KEY,BASE_URL)
+# def get_api():
+#     """
+#     will confirm and return the alpaca api conenctions.
+#     """
+#     from core.config import ALPACA_API_KEY, ALPACA_SECRET_KEY
+#     return tradeapi.REST(ALPACA_API_KEY,ALPACA_SECRET_KEY,BASE_URL)
 
 def check_kill_switch(api):
     """
@@ -54,8 +54,7 @@ def get_current_position(api,ticker):
     try:
         position=api.get_position(ticker)
         return float(position.market_value)
-    except Exception as e:
-        print(f"Error {e}");
+    except:
         return 0.0#no position held
     
 
@@ -109,10 +108,10 @@ def trade_ticker(api,ticker):
             log_trade("risky1", ticker, "BUY", price, qty, reason="ML signals to Buy and the regime is favorable")
             print(f"Buy {qty}{ticker} @ ${price}")
 
-        if qty>0:
-            api.submit_order(symbol=ticker,qty=qty,side='buy',type='market',time_in_force='day')
-            log_trade("risky1",ticker,"BUY",price,qty,reason="ML signals to Buy and the regime is favorable")
-            print(f"Buy {qty}{ticker} @ ${price}")
+        # if qty>0:
+        #     api.submit_order(symbol=ticker,qty=qty,side='buy',type='market',time_in_force='day')
+        #     log_trade("risky1",ticker,"BUY",price,qty,reason="ML signals to Buy and the regime is favorable")
+        #     print(f"Buy {qty}{ticker} @ ${price}")
 
     elif prediction ==0 and current_pos>0:
         #if prediciton is 0 and pos is greater than 0, SELL NOW
@@ -130,12 +129,12 @@ def run():
     """ 
     This is the main loop for the risky1 strategy, and it runs continusly. it will check each ticker every 60 seconds, and runs continuosly. It iwll be called from run.py when the system boots up
     """
-    api = get_api()
-    print("Risky bot started now...")
+    api = get_api("risky1")
+    print("risky1 bot started now...")
     while True:
         try:
             if check_kill_switch(api):
-                print("Kill switch has stopped Risky bot")
+                print("Kill switch has stopped risky1 bot")
                 break
 
             # Check if market is open before trading
