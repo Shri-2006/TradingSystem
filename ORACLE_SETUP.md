@@ -57,6 +57,8 @@ oci compute image list \
   --output table \
   --query "data[*].{Name:\"display-name\", OCID:id}"
 ```
+## Link to image ocid list based on region
+### https://docs.oracle.com/en-us/iaas/images/ubuntu-2204/
 **Correct image**: `Canonical-Ubuntu-22.04-aarch64-2026.02.28-0`  
 **Image OCID**: `ocid1.image.oc1.iad.aaaaaaaahk7zm5s5gv4imyzgui5c77uzfpn72blj3od2icmohxzv3zpuiikq`
 
