@@ -55,3 +55,6 @@ Only implement if TextBlob sentiment proves insufficient.
 
 ## Readme
 - update readme again
+
+## Bot 4 & 5
+- Implement a RL version of stable and risky1 for stocks and etfs
