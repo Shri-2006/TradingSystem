@@ -6,7 +6,7 @@
 
 ## Planned Improvements
 
-### 1. SearXNG Macro Circuit Breaker
+### 1. SearXNG Macro Circuit Breaker (Optional)
 Use self-hosted SearXNG instance to search for high-impact macro keywords.
 If search results contain high frequency of words like:
 - "Federal Reserve interest rate"
@@ -35,14 +35,14 @@ Use VIX as a macro regime signal:
 - VIX > 30 → high fear → consider pausing risky bots
 Integrate into regime_detector.py alongside ADX.
 
-### 4. Reddit Sentiment (Optional)
+### 4. Reddit Sentiment (Optional, maybe skip)
 Add r/wallstreetbets and r/stocks sentiment via PRAW library.
 Aggregate with existing TextBlob Polygon news sentiment.
 Weighted average: 70% news sentiment, 30% Reddit sentiment.
 Only implement if TextBlob sentiment proves insufficient.
 
 ## Implementation Order
-1. SearXNG circuit breaker (new file: data/macro_fetcher.py)
+1. SearXNG circuit breaker (new file: data/macro_fetcher.py) (OPTIONAL)
 2. ADX regime detection (upgrade models/regime_detector.py)
 3. VIX signal (upgrade models/regime_detector.py)
 4. Reddit sentiment (upgrade data/sentiment_fetcher.py) — optional
@@ -57,11 +57,11 @@ Only implement if TextBlob sentiment proves insufficient.
 - update readme again
 - add supervised vs unsupervised vs reinforced learning chart that explains differences in methods
 
-## Bot 4 & 5
+## Bot 4 & 5 (do this absolutely last, make sure the first 3 bots work)
 - Implement a RL version of stable and risky1 for stocks and etfs
 
-## Bot 6
+## Bot 6(do this absolutely last, make sure the first 3 bots work)
 - Implement a supervised learning version of risky2 (for crypto)
 
-## Bot 7,8,9
+## Bot 7,8,9(do this absolutely last, make sure the first 3 bots work)
 -Implement a unsupervised learning version of stable,risky1, risky2
