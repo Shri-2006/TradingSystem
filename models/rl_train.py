@@ -29,7 +29,7 @@ def prepare_rl_data(ticker,days_to_look_back=365): #look back one year
     return df;
 
 
-def train_rl_model(ticker="Symbol/Base",days_to_look_back=365,timesteps=50000):
+def train_rl_model(ticker="Symbol/Base",days_to_look_back=365,timesteps=500000):#increased timesteps to 500000 to be mroe accurate
     
     """
     This will train Proximal policy optimization (PPO) model on historical crypto data. The ticker is crypto pair in alpaca format such as BTC/USD, and timesteps is how many steps the PPO trains for. 50000 is an amount that likely won't take hours to train but is still enough to do basic patterns    
