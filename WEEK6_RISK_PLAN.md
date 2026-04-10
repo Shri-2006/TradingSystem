@@ -111,3 +111,8 @@ Please guide me so that:
 1. I implement the RL bot architecture first
 2. I avoid hardcoding things that will make risk management harder later
 3. After the RL bot structure is complete, I can then add a shared risk-management layer across all bots
+
+
+Additional Ideas:
+# - Add Sortino ratio to metrics/risk.py
+# - Test kill switches with mocked Alpaca API

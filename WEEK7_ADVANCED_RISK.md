@@ -41,3 +41,6 @@ Data source: SQLite trade logs.
 
 ## Readme
 Make sure to update readme to reflect newer updates
+
+# Additoinal ideas
+# - Full dashboard remake with equity curve and drawdown charts. Have the user understand exactly how the code works and have them make it
