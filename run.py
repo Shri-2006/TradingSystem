@@ -4,6 +4,7 @@ import threading #i want the bots to run side by side so that the run_stable and
 from models.retrain import start_scheduler
 from strategies.stable import run as run_stable
 from strategies.risky1 import run as run_risky1
+from strategies.risky2 import run as run_risky2
 from paper_trading.alpaca_paper import is_market_open
 
 
@@ -24,11 +25,14 @@ def main():
     #separate threads per bbot
     stable_thread=threading.Thread(target=run_stable,daemon=True, name="stable")
     risky1_thread=threading.Thread(target=run_risky1,daemon=True,name="risky1")
+    risky2_thread=threading.Thread(target=run_risky2,daemon=True,name="risky2")
+    
     stable_thread.start()
     print("Stable strat bot thread has started")
     risky1_thread.start()
     print("Risky1 strat bot threat started")
-
+    risky2_thread.start()
+    print("Risky2 RL bot for crypto thread is started")
     #Keeping the main procecss alive
     try:
         while True:
