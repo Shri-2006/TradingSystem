@@ -694,3 +694,43 @@ Need to make system reproducible, testable, and deployable for other people with
 **Why:** Automated tests catch bugs before they reach the live system.Easier to check. Tests now run on every push to main with dummy API keys so no credentials are exposed.
 
 **Result:** Docker setup complete, CI passing 16/16 on push
+
+
+## April 10, 2026 - RL Bot Architecture for risky2
+
+**Context** 
+A third strategy for crypto taht goes beyond supervised ML needs to be chosen. XGBoost does predict direction but it cannot manage positions over time
+
+**options considered 1:** which RL algorithm to choose?
+- PPO (proximal policy optimization)
+- DQN( deep q-network)
+- A3C (asynchrnous advantage critic)
+- SAC (soft actor critic)
+
+**Decision 1: **PPO
+**Why:** PPO is a industry standard in trading bots, it is more stable than DQN, easier and simpler than A3C and it works well in discrete actions. Stable Baselines3 also has a clean implementation of PPO that integrates directly with our gymnasium environment
+
+**options considered 2** how many actions to do?
+- BUY/SELL (like xgboost)
+- HOLD/BUY/SELL
+
+**decision 2:** last option
+**why** XGBoost only predicts direction but the RL also manages the positions over time, thus needing o learn when holding is a right move, not just buy/sell. If no HOLD it would over trade.
+
+
+**Options Considered 3:** Training data for lookback
+- 2 years (same as XGBoost)
+- 1 year
+
+**Decision 3:** 1 year
+**Why:** XGBoost is supervised so more data helps. RL learns by trial and error — too much historical data risks overfitting to old and outdated regimes like the 2022 bear market patterns that don't reflect current conditions.
+
+**Options Considered 4:** gamma value
+- 0.0 (instant profit only)
+- 0.99 (value future rewards almost equally)
+
+**Decision 4:** 0.99
+**Why:** At gamma=0 the agent only cares about instant profit and would chase tiny gains constantly. At 0.99 it's willing to hold a positon patiently for bigger future rewards which is better behavior for a crypto trading bot.
+
+**Results:**
+Stable and risky1 are running on old elitebook. risky2 has not been trained yet, will train once cloud opens up since elitebook is too old to handle.
