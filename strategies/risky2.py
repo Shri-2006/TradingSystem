@@ -31,7 +31,7 @@ def trade_ticker(api,ticker):
         print(f" No RL model has been loaded and {ticker} will be skipped")
         return;
     df=get_latest_bar(ticker)
-    if df is none or df.empty:
+    if df is None or df.empty:
         print(f"No data is in {ticker}, skipping")
         return
     # build the features in df
@@ -45,7 +45,7 @@ def trade_ticker(api,ticker):
     obs,  _=env.reset()
 
     #nwo to get the action from model
-    action, _ = model.predict(obs, determinisitc=True)
+    action, _ = model.predict(obs, deterministic=True)
     price=float(df['close'].iloc[-1])
     current_pos=get_current_position(api,ticker)
     max_pos=MAX_POSITION_SIZE[strategy]
@@ -62,8 +62,35 @@ def trade_ticker(api,ticker):
     #sell
     elif action==2 and current_pos>0:
         api.close_position(ticker)
-        log_trade(straategy,ticker,"SELL",price,current_pos,reasons="PPO agent is choosing to sell")
+        log_trade(strategy,ticker,"SELL",price,current_pos,reason="PPO agent is choosing to sell")
         print(f"SELL {ticker} @ ${price}")
 
     else:
         print(f"HOLD {ticker} due to agent action {action}")
+
+def run():
+    """
+    This is the main loop for risky2 RL bot. Since crypto is 24/7 there is no need for market hours check
+    """
+    api=get_api(strategy)
+    print("Risky2 RL bot has started now.....")
+    while True:
+        try:
+            for ticker in RISKY2_ASSETS:
+                try:
+                    trade_ticker(api,ticker)
+                except Exception as e:
+                    print(f"There was an error in trading {ticker}: {e}")
+                time.sleep(20)
+            print(f"Cycle was completed at {datetime.now()}, sleeping for 60 seconds (1min)")
+            time.sleep(60)
+        except KeyboardInterrupt:
+            print("Risky2 bot was manually stopped by user")
+            break;
+
+        except Exception as e:
+            print(f"Unexpected error occured: {e}\n restarting in 60 seconds")
+            time.sleep(60)
+
+if __name__=="__main__":
+    run()
