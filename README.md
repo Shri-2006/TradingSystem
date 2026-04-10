@@ -94,6 +94,12 @@ Not ready for set up yet
 - Dockerfile — containerizes the full system
 - docker-compose.yml — runs bots + Streamlit dashboard together
 - .github/workflows/test.yml — GitHub Actions CI, auto-runs 16 tests on every push to main
+- models/rl_environment.py- Created a custom gymnasium trading env for risky2 rl bot. The state is price features +position+unrealized PnL. Actions 0=HOLD,1=Buy,2=SELL. There is small penatly for overtrading and nudges to exit loser positions. Drawdown traced per step is a hook for a future kill switch integration for this.
+
+- models/rl_train.py - PPO training pipeline for risky2. It fetches a year's worth of historical crypto daya, builds features and trains agent using MlpPolicy for about 50000 timesteps. The model will be saved in risky2_model.zip
+
+-strategies/risky2.py- Live RL trading strategy for crypto, it loads ppo model and builds live observation from the latest price data, and feeds it to the model for hold/buy/sell decisions. 
+-
 
 ### nice sources to read up on:
 https://www.investopedia.com/terms/b/bollingerbands.asp
