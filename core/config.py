@@ -83,3 +83,13 @@ STOP_LOSS_PER_TRADE={
 WARNING_DRAWDOWN={
     "stable":-.07,"risky1":-.15,"risky2":-.15 #half of the killswitch should be good for a warning (where it will start reducing how much of the position is held).
 }
+
+
+#working on new dashboard below Week 7
+STRATEGY_COLORS={ ## gained from LLM, wasn't sure how to implement this on my own
+    "stable": "#4A90D9",
+    "risky1": "#E67E22",
+    "risky2": "#9B59B6"
+}
+
+HEARTBEAT_STALE_SECONDS = 60

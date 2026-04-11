@@ -6,7 +6,7 @@ import time
 from datetime import datetime
 #from core.config import (STABLE_ASSETS,MAX_POSITION_SIZE,MAX_DRAWDOWN,CAPITAL,PAPER_MODE,ALPACA_PAPER_URL,ALPACA_LIVE_URL )
 from core.config import (STABLE_ASSETS, MAX_POSITION_SIZE, CAPITAL)
-from core.logger import log_trade
+#from core.logger import log_trade
 from core.features import build_features
 from data.polygon_fetcher import get_latest_bar
 from data.sentiment_fetcher import add_sentiment_to_df
@@ -16,6 +16,7 @@ from models.train import load_model
 #import alpaca_trade_api as tradeapi
 from paper_trading.alpaca_paper import get_api, get_sleep_duration
 from metrics.risk_manager import get_position_size, should_close_position, get_portfolio_risk_level
+from core.logger import log_trade, log_heartbeat
 
 strategy="stable"
 _peak_equity = {strategy: CAPITAL[strategy]} #get the highest equity
@@ -257,6 +258,7 @@ def run():
         except Exception as e:
             print(f"there was an unexpected error : {e}, will restart cycle in 60 seconds")
             time.sleep(60)
+        log_heartbeat(strategy, "RUNNING")
     
 if __name__=="__main__":
     run();
