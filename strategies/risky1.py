@@ -270,6 +270,7 @@ def run():
                     continue
                 time.sleep(20)
             print(f"cycle has complteded at {datetime.now()}-time to sleep for 1 min")
+            log_heartbeat(strategy, "RUNNING")
             time.sleep(60)
         except KeyboardInterrupt:
             print("Risky1 bot was manually stopped by user")
@@ -277,7 +278,7 @@ def run():
         except Exception as e:
             print(f"there was an unexpected error : {e}, will restart cycle in 60 seconds")
             time.sleep(60)
-        log_heartbeat(strategy, "RUNNING")
+        
     
 if __name__=="__main__":
     run();
