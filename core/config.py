@@ -65,3 +65,8 @@ RISKY2_ASSETS = ["X:BTCUSD","X:ETHUSD","X:SOLUSD","X:AVAXUSD","X:LINKUSD","X:ADA
 
 #Retraining of model occurances in days
 RETRAIN_INTERVAL_DAYS=14
+
+
+FEATURE_FLAGS={
+    "risky2_enabled":False #when false, risky2 model simply doesn't run. when true, risky2 model runs. meant because its still being built as of this moment and is wasting resources.
+}

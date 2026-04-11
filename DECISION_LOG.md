@@ -734,3 +734,21 @@ A third strategy for crypto taht goes beyond supervised ML needs to be chosen. X
 
 **Results:**
 Stable and risky1 are running on old elitebook. risky2 has not been trained yet, will train once cloud opens up since elitebook is too old to handle.
+
+
+
+
+## April 11, 2026 - Smart Sleep Duration
+
+**Context:** Bots were pinging every 60 seconds even when market was 12+ hours from opening, wasting Azure credits.
+
+**Decision:** Dynamic sleep based on time until market open.
+- >24h until open : sleep 12h
+- >12h until open : sleep 8h  
+- >8h until open : sleep 3h
+- >1h until open: sleep 30min
+- <1h until open: sleep 1min
+- Market open: trade normally
+
+**Why:** Alpaca clock API tells us exact time until next open-works for any timezone and handles weekends/holidays automatically. Reduces API calls by ~99% during closed hours.
+**Result:** Live on Azure — sleeping 12 hours on Friday night ✅

@@ -6,7 +6,7 @@ from strategies.stable import run as run_stable
 from strategies.risky1 import run as run_risky1
 from strategies.risky2 import run as run_risky2
 from paper_trading.alpaca_paper import is_market_open
-
+from core.config import FEATURE_FLAGS
 
 def main():
     """
@@ -31,9 +31,12 @@ def main():
     print("Stable strat bot thread has started")
     risky1_thread.start()
     print("Risky1 strat bot threat started")
-    risky2_thread.start()
-    print("Risky2 RL bot for crypto thread is started")
-    #Keeping the main procecss alive
+    if FEATURE_FLAGS["risky2_enabled"]==true:
+        risky2_thread.start()
+        print("Risky2 RL bot for crypto thread is started")
+        #Keeping the main procecss alive
+    else:
+        print("risky2 rl bot is currently disabled in config.py, enable it when model is trained")
     try:
         while True:
             time.sleep(60)
