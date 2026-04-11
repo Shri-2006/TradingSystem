@@ -5,7 +5,7 @@ python -m pytest tests/test_risk.py -v
 import pytest
 import pandas as pd
 import numpy as np
-from metrics.risk import sharpe_ratio, max_drawdown, win_loss_ratio, compute_all_metrics
+from metrics.risk import sharpe_ratio, max_drawdown, win_loss_ratio, compute_all_metrics, sortino_ratio
 
 def make_returns(positive=True, rows=252):
     """
@@ -67,3 +67,84 @@ def test_compute_all_metrics_keys():
     assert "sharpe_ratio"  in result
     assert "max_drawdown"  in result
     assert "win_loss_ratio" in result
+
+
+
+
+# ── Sortino Ratio Tests ──────────────────────────────────────
+def test_sortino_positive_returns():
+    """Sortino should be positive when returns are consistently positive"""
+    returns = pd.Series([0.01, 0.02, 0.01, 0.03, 0.02])
+    result = sortino_ratio(returns)
+    assert result > 0
+
+def test_sortino_negative_returns():
+    """Sortino should be negative when returns are consistently negative"""
+    returns = pd.Series([-0.01, -0.02, -0.01, -0.03, -0.02])
+    result = sortino_ratio(returns)
+    assert result < 0
+
+def test_sortino_flat_returns():
+    """Sortino should return 0 for flat returns"""
+    returns = pd.Series([0.0] * 10)
+    result = sortino_ratio(returns)
+    assert result == 0.0
+
+def test_sortino_no_downside():
+    """Sortino should return 0 when no downside exists"""
+    returns = pd.Series([0.01, 0.02, 0.03])
+    result = sortino_ratio(returns)
+    assert result == 0.0
+
+# ── Risk Manager Tests ───────────────────────────────────────
+import os
+os.environ['POLYGON_API_KEY'] = 'test_key'
+os.environ['ALPACA_API_KEY'] = 'test_key'
+os.environ['ALPACA_SECRET_KEY'] = 'test_key'
+
+from metrics.risk_manager import get_portfolio_risk_level, get_position_size, check_stop_loss
+
+def test_risk_level_safe():
+    """Should return safe when equity is above warning threshold"""
+    result = get_portfolio_risk_level("stable", 1000.0)
+    assert result == "safe"
+
+def test_risk_level_warning():
+    """Should return warning when equity drops past warning threshold"""
+    # stable warning at -7%, start = 1000, so 930 triggers warning
+    result = get_portfolio_risk_level("stable", 920.0)
+    assert result == "warning"
+
+def test_risk_level_critical():
+    """Should return critical when equity drops past kill switch"""
+    # stable kill switch at -15%, so 840 triggers critical
+    result = get_portfolio_risk_level("stable", 840.0)
+    assert result == "critical"
+
+def test_position_size_safe():
+    """Full position size when safe"""
+    base = 200.0
+    result = get_position_size("stable", 1000.0, base)
+    assert result == base
+
+def test_position_size_warning():
+    """Half position size when warning"""
+    base = 200.0
+    result = get_position_size("stable", 920.0, base)
+    assert result == base * 0.5
+
+def test_position_size_critical():
+    """Zero position size when critical"""
+    base = 200.0
+    result = get_position_size("stable", 840.0, base)
+    assert result == 0.0
+
+def test_stop_loss_triggered():
+    """Stop loss should trigger when price drops enough"""
+    result = check_stop_loss("stable", entry_price=100.0, current_price=94.0)
+    assert result == True  # 6% drop > 5% threshold
+
+def test_stop_loss_not_triggered():
+    """Stop loss should not trigger on small dip"""
+    result = check_stop_loss("stable", entry_price=100.0, current_price=97.0)
+    assert result == False  # 3% drop < 5% threshold
