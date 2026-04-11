@@ -70,3 +70,16 @@ RETRAIN_INTERVAL_DAYS=14
 FEATURE_FLAGS={
     "risky2_enabled":False #when false, risky2 model simply doesn't run. when true, risky2 model runs. meant because its still being built as of this moment and is wasting resources.
 }
+
+
+#adding per trade stop loss to prevent individual stocks from tanking the overall performance of the strategy.
+
+stop_LossPerTrade={
+    "stable":.05,#if a stock moves 5%...thats a problem
+    "risky1": .08,#somewwhat volatile, should get some room
+    "risky2":.12#crypto gets a heck of alot more room because it is well...insane
+} 
+
+WARNING_DRAWDOWN={
+    "stable":-.07,"risky1":-.15,"risky2":-.15 #half of the killswitch should be good for a warning (where it will start reducing how much of the position is held).
+}
