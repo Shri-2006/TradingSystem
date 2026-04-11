@@ -44,3 +44,64 @@ Make sure to update readme to reflect newer updates
 
 # Additoinal ideas
 # - Full dashboard remake with equity curve and drawdown charts. Have the user understand exactly how the code works and have them make it
+
+
+
+
+
+# Week 7 — Dashboard Remake
+
+## Status: In Progress
+
+## Design Philosophy
+- 15-second rule: user understands system health within 15 seconds
+- Every metric answers a practical question
+- Green = gains/healthy, Red = losses/danger
+- Strategy colors locked in config.py — never change
+
+## Strategy Colors
+- Stable: #4A90D9 (blue — conservative)
+- Risky1: #E67E22 (orange — aggressive)  
+- Risky2: #9B59B6 (purple — experimental RL)
+
+## Staleness Threshold
+- Heartbeat stale after 60 seconds
+- Display last sync time in UI
+
+## PnL Formula Note
+- Long-only system for now
+- unrealized_pnl = (current_price - entry_price) × position_size
+- When shorting added: flip sign for short positions
+
+## Build Order
+### Phase 1 — Foundation
+- [ ] SQLite WAL setup
+- [ ] Heartbeat system (logger.py update)
+- [ ] Strategy colors in config.py
+- [ ] HEARTBEAT_STALE_SECONDS = 60 in config.py
+
+### Phase 2 — MVP Tabs
+- [ ] Tab 1: Portfolio header + leaderboard
+- [ ] Tab 2: Equity curve + drawdown chart
+- [ ] Tab 3: Risk labels + positions
+- [ ] Tab 4: Trade log
+
+### Phase 3 — Logic Layer
+- [ ] Unrealized PnL calculation
+- [ ] Drawdown threshold progress bars
+- [ ] Trade filtering
+
+### Phase 4 — Polish
+- [ ] Benchmark comparison (SPY)
+- [ ] Monthly returns heatmap
+- [ ] Server telemetry (CPU/RAM)
+
+## Files Changed
+- core/config.py — add STRATEGY_COLORS, HEARTBEAT_STALE_SECONDS
+- core/logger.py — add heartbeat logging
+- dashboard/streamlit_app_v2.py — new dashboard (swap when ready)
+
+## Notes
+- AgGrid skipped — use st.dataframe with st.column_config
+- Excess return vs benchmark moved to Phase 4
+- Keep existing streamlit_app.py until v2 is ready
