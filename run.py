@@ -31,7 +31,7 @@ def main():
     print("Stable strat bot thread has started")
     risky1_thread.start()
     print("Risky1 strat bot threat started")
-    if FEATURE_FLAGS["risky2_enabled"]==true:
+    if FEATURE_FLAGS["risky2_enabled"]==True:
         risky2_thread.start()
         print("Risky2 RL bot for crypto thread is started")
         #Keeping the main procecss alive
