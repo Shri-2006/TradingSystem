@@ -50,7 +50,7 @@ def get_sleep_duration(strategy):
         return x*8
     elif seconds_left>8*x:
         return x*3;
-    elif seconds_left>1:
+    elif seconds_left>1*x:
         return (1/2)*x;
     else:
         return 60
