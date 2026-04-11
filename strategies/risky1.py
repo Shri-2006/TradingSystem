@@ -5,7 +5,7 @@ import time
 #import pandas as pd
 from datetime import datetime
 #from core.config import (RISKY1_ASSETS,MAX_POSITION_SIZE,MAX_DRAWDOWN,CAPITAL,PAPER_MODE,ALPACA_PAPER_URL,ALPACA_LIVE_URL )
-from core.config import (RISKY1_ASSETS, MAX_POSITION_SIZE, MAX_DRAWDOWN, CAPITAL)
+from core.config import (RISKY1_ASSETS, MAX_POSITION_SIZE, CAPITAL)
 from core.logger import log_trade
 from core.features import build_features
 from data.polygon_fetcher import get_latest_bar
@@ -15,11 +15,15 @@ from models.train import load_model
 #from metrics.risk import compute_all_metrics
 #import alpaca_trade_api as tradeapi
 #from paper_trading.alpaca_paper import get_api, is_market_open
-from paper_trading.alpaca_paper import get_api, is_market_open, get_sleep_duration
+from paper_trading.alpaca_paper import get_api, get_sleep_duration
+from metrics.risk_manager import get_position_size, should_close_position, get_portfolio_risk_level
+
+strategy="risky1"
+_peak_equity = {strategy: CAPITAL[strategy]} #get the highest equity
 
 
 #loading model only once to keep same model for each trade in single session, save memory (analysis of algorithms thank you) and to improve speed to avoid reinitializing model from disk each trade
-strategy="risky1"
+
 model=load_model("risky1_model.pkl")
 #Alpaca connection (paper vs live)
 # if PAPER_MODE["risky1"]:
@@ -34,21 +38,48 @@ model=load_model("risky1_model.pkl")
 #     from core.config import ALPACA_API_KEY, ALPACA_SECRET_KEY
 #     return tradeapi.REST(ALPACA_API_KEY,ALPACA_SECRET_KEY,BASE_URL)
 
+# def check_kill_switch(api):
+#     """
+#     This will checkk if the loss has exceeded 30% overall. if it has, it closes alll positions and stops trading immediately. It will also return true if kill switchh is fired, else false if safe
+#     """
+#     account=api.get_account()
+#     equity=float(account.equity)
+#     start_cash=CAPITAL["risky1"]
+#     drawdown=(equity-start_cash)/(start_cash);
+
+#     if drawdown<= MAX_DRAWDOWN["risky1"]:
+#         print(f"KILL SWITCH IS BEING FIRED STOP NOW - drawdown is {drawdown:.2%} and has exceeded the limit")
+#         api.close_all_positions()
+#         log_trade("risky1","ALL","KILL_SWITCH",0,0,pnl=drawdown,reason=(f"Drawdown is {drawdown:.2%}"))
+#         return True
+#     return False
 def check_kill_switch(api):
     """
-    This will checkk if the loss has exceeded 30% overall. if it has, it closes alll positions and stops trading immediately. It will also return true if kill switchh is fired, else false if safe
+    Checks portfolio risk level using the peak equity. If critical it will trip kill switch, if warning reduce position size by about half
     """
+    global _peak_equity
     account=api.get_account()
     equity=float(account.equity)
-    start_cash=CAPITAL["risky1"]
-    drawdown=(equity-start_cash)/(start_cash);
 
-    if drawdown<= MAX_DRAWDOWN["risky1"]:
-        print(f"KILL SWITCH IS BEING FIRED STOP NOW - drawdown is {drawdown:.2%} and has exceeded the limit")
+    #update peak equity for the profit
+    _peak_equity[strategy]=max(_peak_equity[strategy],equity)
+    peak=_peak_equity[strategy]
+
+    #drawdown using peak value
+    drawdown=(equity-peak)/peak
+    risk_level=get_portfolio_risk_level(strategy,equity)
+
+    if risk_level=="critical":
+        print(f"KILL SWITCH HAS BEEN FIRED:     DRAWDOWN{drawdown:.2%} from the peak of ${peak:.2f}")
         api.close_all_positions()
-        log_trade("risky1","ALL","KILL_SWITCH",0,0,pnl=drawdown,reason=(f"Drawdown is {drawdown:.2%}"))
+        log_trade(strategy,"ALL","KILL_SWITCH",0,0,pnl=drawdown,reason=f"Drawdown {drawdown:.2%} from the peak")
         return True
+    elif risk_level=="warning":
+        print(f"WARNINGG, drawdown {drawdown:.2%}, bot to reduce position size")
     return False
+
+
+
 
 def get_current_position(api,ticker):
     """"
@@ -63,67 +94,150 @@ def get_current_position(api,ticker):
 
 
 #Main trading logic btw, take a look :D
-def trade_ticker(api,ticker):
-    """
-    This will run a full trading cycle per ticker, and is called only once per ticker per trading cycle in the function run()
+# def trade_ticker(api,ticker):
+#     """
+#     This will run a full trading cycle per ticker, and is called only once per ticker per trading cycle in the function run()
     
-    """
-    #get price data
-    df=get_latest_bar(ticker)
-    if df is None or df.empty:
-        print(f"There is no data for {ticker}, will skip")
-        return
+#     """
+#     #get price data
+#     df=get_latest_bar(ticker)
+#     if df is None or df.empty:
+#         print(f"There is no data for {ticker}, will skip")
+#         return
     
-    #now the features
-    df=build_features(df)
-    df=add_sentiment_to_df(df,ticker)
+#     #now the features
+#     df=build_features(df)
+#     df=add_sentiment_to_df(df,ticker)
 
-    #now checks regime
-    if not get_regime_for_strategy(df,"risky1"):
-        print(f"{ticker}  regime is in a unfavorable spot, sitting out this time")
+#     #now checks regime
+#     if not get_regime_for_strategy(df,"risky1"):
+#         print(f"{ticker}  regime is in a unfavorable spot, sitting out this time")
+#         return
+    
+#     #now gets the ML prediction
+#     feature_cols=[c for c in df.columns if c not in ['open','high','low','close','volume']]
+#     X=df[feature_cols].values
+#     prediction=model.predict(X[-1].reshape(1,-1))[0]
+#     price=float(df['close'].iloc[-1])
+    
+#     #now based on the predicition it will choose what trade to do
+#     current_pos=get_current_position(api,ticker)
+#     max_pos=MAX_POSITION_SIZE["risky1"]
+#     # Momentum strategy exits faster than grid
+#     # Sell if momentum turns negative even without ML signal
+#     if df['momentum_5'].iloc[-1] < 0 and current_pos > 0:
+#         api.close_position(ticker)
+#         log_trade("risky1", ticker, "SELL", price, current_pos,
+#           reason="Momentum turned negative")
+#         return
+#     if prediction==1 and current_pos<max_pos:
+#         #if predicition is 1 and pos is less than max, buy
+#         qty = round((max_pos - current_pos) / price, 4)
+#         if qty > 0:
+#             order_value = qty * price
+#             if order_value < 1.0:
+#                 print(f"Skipping {ticker} — order value ${order_value:.2f} below $1 minimum")
+#                 return
+#             api.submit_order(symbol=ticker, qty=qty, side='buy', type='market', time_in_force='day')
+#             log_trade("risky1", ticker, "BUY", price, qty, reason="ML signals to Buy and the regime is favorable")
+#             print(f"Buy {qty}{ticker} @ ${price}")
+
+#         # if qty>0:
+#         #     api.submit_order(symbol=ticker,qty=qty,side='buy',type='market',time_in_force='day')
+#         #     log_trade("risky1",ticker,"BUY",price,qty,reason="ML signals to Buy and the regime is favorable")
+#         #     print(f"Buy {qty}{ticker} @ ${price}")
+
+#     elif prediction ==0 and current_pos>0:
+#         #if prediciton is 0 and pos is greater than 0, SELL NOW
+#         api.close_position(ticker)
+#         log_trade("risky1",ticker,"SELL",price,current_pos,reason="ML signals to SELL now")
+#         print(f"SELL{ticker}  @  ${price}")
+#     else:
+#         #in other cases simply hold the pos
+#         print(f"HOLD{ticker}, no action needed rn")
+
+def trade_ticker(api, ticker):
+
+    """
+    Main trading code that will run once per ticker in trading cycle
+    """
+    account = api.get_account()
+    equity = float(account.equity)
+
+    # Get price data first — needed for stop loss and ML
+    df = get_latest_bar(ticker)
+    if df is None or df.empty:
+        print(f"No data for {ticker}, skipping")
         return
-    
-    #now gets the ML prediction
-    feature_cols=[c for c in df.columns if c not in ['open','high','low','close','volume']]
-    X=df[feature_cols].values
-    prediction=model.predict(X[-1].reshape(1,-1))[0]
-    price=float(df['close'].iloc[-1])
-    
-    #now based on the predicition it will choose what trade to do
-    current_pos=get_current_position(api,ticker)
-    max_pos=MAX_POSITION_SIZE["risky1"]
-    # Momentum strategy exits faster than grid
-    # Sell if momentum turns negative even without ML signal
+
+    df = build_features(df)
+    df = add_sentiment_to_df(df, ticker)
+    if len(df) == 0:
+        return
+
+    current_price = float(df['close'].iloc[-1])
+
+    # Momentum exit — risky1 specific
+
+    # Risk-adjusted position size
+    base_size = MAX_POSITION_SIZE[strategy]
+    max_pos = get_position_size(strategy, equity, base_size)
+    if max_pos == 0:
+        print(f"Portfolio critical — skipping {ticker}")
+        return
+
+    # Check stop loss on existing position
+    current_pos = get_current_position(api, ticker)
     if df['momentum_5'].iloc[-1] < 0 and current_pos > 0:
         api.close_position(ticker)
-        log_trade("risky1", ticker, "SELL", price, current_pos,
-          reason="Momentum turned negative")
+        log_trade(strategy, ticker, "SELL", current_price, current_pos,
+                reason="Momentum turned negative")
+        print(f"Momentum exit {ticker}")
         return
-    if prediction==1 and current_pos<max_pos:
-        #if predicition is 1 and pos is less than max, buy
-        qty = round((max_pos - current_pos) / price, 4)
-        if qty > 0:
-            order_value = qty * price
-            if order_value < 1.0:
-                print(f"Skipping {ticker} — order value ${order_value:.2f} below $1 minimum")
+
+    if current_pos > 0:
+        try:
+            position = api.get_position(ticker)
+            entry_price = float(position.avg_entry_price)
+            if should_close_position(strategy, entry_price, current_price, equity):
+                api.close_position(ticker)
+                log_trade(strategy, ticker, "SELL", current_price, current_pos,
+                         reason="Stop loss or portfolio risk triggered")
+                print(f"Closed {ticker} — risk management triggered")
                 return
-            api.submit_order(symbol=ticker, qty=qty, side='buy', type='market', time_in_force='day')
-            log_trade("risky1", ticker, "BUY", price, qty, reason="ML signals to Buy and the regime is favorable")
-            print(f"Buy {qty}{ticker} @ ${price}")
+        except:
+            pass
 
-        # if qty>0:
-        #     api.submit_order(symbol=ticker,qty=qty,side='buy',type='market',time_in_force='day')
-        #     log_trade("risky1",ticker,"BUY",price,qty,reason="ML signals to Buy and the regime is favorable")
-        #     print(f"Buy {qty}{ticker} @ ${price}")
+    # Check regime
+    if not get_regime_for_strategy(df, strategy):
+        print(f"{ticker} regime unfavorable, sitting out")
+        return
 
-    elif prediction ==0 and current_pos>0:
-        #if prediciton is 0 and pos is greater than 0, SELL NOW
+    # ML prediction
+    feature_cols = [c for c in df.columns if c not in ['open','high','low','close','volume']]
+    X = df[feature_cols].values
+    prediction = model.predict(X[-1].reshape(1,-1))[0]
+
+    # Execute trade
+    if prediction == 1 and current_pos < max_pos:
+        qty = round((max_pos - current_pos) / current_price, 4)
+        if qty > 0:
+            order_value = qty * current_price
+            if order_value < 1.0:
+                print(f"Skipping {ticker} — order ${order_value:.2f} below minimum")
+                return
+            api.submit_order(symbol=ticker, qty=qty, side='buy',
+                           type='market', time_in_force='day')
+            log_trade(strategy, ticker, "BUY", current_price, qty,
+                     reason="ML signals BUY, regime favorable")
+            print(f"Buy {qty} {ticker} @ ${current_price}")
+    elif prediction == 0 and current_pos > 0:
         api.close_position(ticker)
-        log_trade("risky1",ticker,"SELL",price,current_pos,reason="ML signals to SELL now")
-        print(f"SELL{ticker}  @  ${price}")
+        log_trade(strategy, ticker, "SELL", current_price, current_pos,
+                 reason="ML signals SELL")
+        print(f"SELL {ticker} @ ${current_price}")
     else:
-        #in other cases simply hold the pos
-        print(f"HOLD{ticker}, no action needed rn")
+        print(f"HOLD {ticker}")
 
 
 
