@@ -74,7 +74,7 @@ FEATURE_FLAGS={
 
 #adding per trade stop loss to prevent individual stocks from tanking the overall performance of the strategy.
 
-stop_LossPerTrade={
+STOP_LOSS_PER_TRADE={
     "stable":.05,#if a stock moves 5%...thats a problem
     "risky1": .08,#somewwhat volatile, should get some room
     "risky2":.12#crypto gets a heck of alot more room because it is well...insane
