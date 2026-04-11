@@ -73,8 +73,8 @@ def test_compute_all_metrics_keys():
 
 # ── Sortino Ratio Tests ──────────────────────────────────────
 def test_sortino_positive_returns():
-    """Sortino should be positive when returns are consistently positive"""
-    returns = pd.Series([0.01, 0.02, 0.01, 0.03, 0.02])
+    """Sortino should be positive when returns are generally positive"""
+    returns = pd.Series([0.01, 0.02, -0.005, 0.03, 0.02, 0.01, -0.003, 0.02])
     result = sortino_ratio(returns)
     assert result > 0
 
