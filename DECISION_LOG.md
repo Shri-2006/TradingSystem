@@ -751,4 +751,48 @@ Stable and risky1 are running on old elitebook. risky2 has not been trained yet,
 - Market open: trade normally
 
 **Why:** Alpaca clock API tells us exact time until next open-works for any timezone and handles weekends/holidays automatically. Reduces API calls by ~99% during closed hours.
-**Result:** Live on Azure — sleeping 12 hours on Friday night ✅
+**Result:** Live on Azure — sleeping 12 hours on Friday night 
+
+
+
+
+
+
+## April 11, 2026 — Week 6 Risk Management Upgrade
+
+**Context:**
+System was running with only a basic kill switch. I felt like a multi-layer risk management to protect capital and profits would be better.
+
+**Decision 1: Peak equity vs starting capital for drawdown**
+- Starting capital: doesn't protect profits made
+- Peak equity: protects profits — if bot makes $200 then loses it all back, peak equity catches it, starting capital wouldn't
+- Decision: Peak equity 
+
+**Decision 2: Stop loss percentage per strategy**
+- Too tight (2%) gets triggered by normal daily noise
+- Too loose (15%) doesn't protect against real losses
+- Decision: stable 5%, risky1 8%, risky2 12%
+- Why: ETFs move 1-2% daily so 5% is a real signal. Crypto is extremely volatile so a 12% breathing room was better.
+
+**Decision 3: Warning threshold at ~50% of kill switch**
+- stable: warn at 7% (kill at 15%)
+- risky1: warn at 15% (kill at 30%)
+- Why: gives time to reduce position sizes before full shutdown. Two layers of protection instead of one sudden stop.
+
+**Decision 4: Sortino over Sharpe for primary metric**
+- Sharpe penalizes ALL volatility including upside
+- Sortino only penalizes downside volatility
+- For a trading bot upside volatility is desirable
+- Decision: keep both, add Sortino as additional metric 
+
+**Decision 5: Smart sleep duration to save Azure credits**
+- Bots were pinging every 60 seconds even when market was
+  12+ hours from opening — wasteful
+- Use Alpaca clock API to calculate exact time until open
+- 24h: sleep 12h, >12h: sleep 8h, >8h: sleep 3h,
+  1h: sleep 30min, <1h: sleep 1min
+- Works for any timezone, handles weekends/holidays automatically
+- Reduces API calls by ~99% during closed hours 
+
+**Result:** All changes live on Azure, 
+tests passing in github actions
