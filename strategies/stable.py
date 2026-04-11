@@ -14,10 +14,10 @@ from models.regime_detector import get_regime_for_strategy
 from models.train import load_model
 #from metrics.risk import compute_all_metrics
 #import alpaca_trade_api as tradeapi
-from paper_trading.alpaca_paper import get_api, is_market_open
+from paper_trading.alpaca_paper import get_api, is_market_open, get_sleep_duration
 
 #loading model only once to keep same model for each trade in single session, save memory (analysis of algorithms thank you) and to improve speed to avoid reinitializing model from disk each trade
-
+strategy="stable"
 model=load_model("stable_model.pkl")
 #Alpaca connection (paper vs live)
 # if PAPER_MODE["stable"]:
@@ -126,10 +126,11 @@ def run():
                 break
 
             # Check if market is open before trading
-            if not is_market_open("stable"):
-                print("Market is closed — sleeping 60 seconds")
-                time.sleep(60)
-                continue  # skip to next cycle
+            sleep_secs=get_sleep_duration(strategy)
+            if sleep_secs>0:
+                print(f"Market is closed - slepeing for {sleep_secs//3600} hours {(sleep_secs%3600//60)} minutes")
+                time.sleep(sleep_secs)
+                continue
 
             for ticker in STABLE_ASSETS:
                 try:

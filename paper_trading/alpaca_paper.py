@@ -22,6 +22,42 @@ def is_market_open(strategy):
     clock=api.get_clock()
     return clock.is_open
 
+def get_sleep_duration(strategy):
+    """
+    To save compute credits, this will return how long to sleep based on time until the opening of the market. It saves by making making it sleep longer when theres longer time till market opens
+    24 hours: Sleep 12
+    12 hours: Sleep 8
+    8 hours: Sleep 3
+    1 hour: sleep 30 min
+    0 hours: Sleep 1 min
+    market open: return 0 (trade now)
+    """
+    api=get_api(strategy)
+    clock=api.get_clock()
+    if (clock.is_open==True):
+        #market is open
+        return 0
+    #calculation of time till open market
+    currentTime=clock.timestamp
+    next_opening=clock.next_open
+    seconds_left=(next_opening-currentTime).total_seconds()
+    x=3600
+
+    #if statements on how to sleep
+    if seconds_left>24*x:
+        return 12*x
+    elif seconds_left>12*x:
+        return x*8
+    elif seconds_left>8*x:
+        return x*3;
+    elif seconds_left>1:
+        return (1/2)*x;
+    else:
+        return 60
+
+
+
+
 def get_account_info(strategy):
     """
     This will return the current equity and cash of the account, and will be used by kill switch to check the drawdown
