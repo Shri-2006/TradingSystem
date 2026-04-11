@@ -38,6 +38,28 @@ def sharpe_ratio(returns,risk_free_rate=None):
         return 0.00000000000000000#muscle spasm hehe
     return(excess.mean()/excess.std())*np.sqrt(252)#annualize sharpe ratio through sqrt(252)* mean/std of excess returns
 
+
+#https://www.investopedia.com/terms/s/sortinoratio.asp
+
+def sortino_ratio(returns,risk_free_rate=None):
+    """
+    Sortino ratio is similar to sharpe but only penalizes downturn volatility. This is better since we like upside volatility.
+    """
+    if risk_free_rate is None:
+        risk_free_rate=get_risk_free_rate()
+    daily_rf=risk_free_rate/252 #252 business days
+    excess = returns-daily_rf
+    #this will only check negative returns for the downside turns
+    downside=excess[excess<0]
+
+    if len(downside)<2:
+        return 0.0
+    downside_std=downside.std()
+    if downside_std<3e-10:
+        return 0.0
+    return (excess.mean()/downside_std)*(252**(1/2))
+
+
 def max_drawdown(returns):
     """
     Calculates max drawdown (worst peak to trough loss). returns is pandas series of daily returns
@@ -69,6 +91,7 @@ def compute_all_metrics(returns):
     return {
 
         "sharpe_ratio":sharpe_ratio(returns),
+        "sortino_ratio":sortino_ratio(returns),
         "max_drawdown":max_drawdown(returns),
         "win_loss_ratio":win_loss_ratio(returns)
     }

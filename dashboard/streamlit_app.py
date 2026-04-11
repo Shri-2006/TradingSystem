@@ -23,6 +23,7 @@ for strategy in strategies:
         rows.append({
             "Strategy"    : strategy.upper(),
             "Sharpe Ratio": "N/A",
+            "Sortino Ratio": "N/A",
             "Max Drawdown": "N/A",
             "Win Rate"    : "N/A",
             "Total Trades": 0,
@@ -33,6 +34,7 @@ for strategy in strategies:
         rows.append({
             "Strategy"    : strategy.upper(),
             "Sharpe Ratio": f"{metrics['sharpe_ratio']:.2f}",
+            "Sortino Ratio":f"{metrics['sortino_ratio']:.2f}",
             "Max Drawdown": f"{metrics['max_drawdown']:.2%}",
             "Win Rate"    : f"{metrics['win_loss_ratio']:.2%}",
             "Total Trades": len(returns),
