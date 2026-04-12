@@ -44,7 +44,11 @@ def get_sleep_duration(strategy):
     x=3600
 
     #if statements on how to sleep
-    if seconds_left>24*x:
+    if seconds_left>(72*x):
+        return 48*x
+    elif seconds_left>(48*x):
+        return 24*x
+    elif seconds_left>24*x:
         return 12*x
     elif seconds_left>12*x:
         return x*8

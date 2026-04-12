@@ -9,7 +9,7 @@ os.environ.setdefault("ALPACA_SECRET_KEY", "dummy")
 os.environ.setdefault("POLYGON_API_KEY", "dummy")
 
 from models.regime_detector import detect_regime, get_regime_for_strategy, TRENDING, RANGING, VOLATILE
-
+from models.regime_detector import detect_regime, get_regime_for_strategy, get_vix, TRENDING, RANGING, VOLATILE
 
 def make_df(trend_slope=1.5, atr_multiplier=1.0, n=100, seed=42):
     """
@@ -119,7 +119,43 @@ class TestRegimeDetector(unittest.TestCase):
     def test_risky1_blocked_in_ranging(self):
         df = make_df(trend_slope=0.0)
         self.assertFalse(get_regime_for_strategy(df, "risky1"))
+# ── VIX signal ────────────────────────────────────────────────────────────────
 
+def make_trending_df():
+    """Reusable trending df for VIX tests."""
+    return make_df(trend_slope=1.5)
+
+class TestVIXSignal(unittest.TestCase):
+
+    def test_high_vix_blocks_risky1(self):
+        """VIX > 30 should block risky1 regardless of regime."""
+        df = make_trending_df()
+        self.assertFalse(get_regime_for_strategy(df, "risky1", vix=35))
+
+    def test_high_vix_blocks_risky2(self):
+        """VIX > 30 should block risky2 regardless of regime."""
+        df = make_trending_df()
+        self.assertFalse(get_regime_for_strategy(df, "risky2", vix=35))
+
+    def test_high_vix_does_not_block_stable(self):
+        """VIX > 30 should not stop stable — it is designed for rough markets."""
+        df = make_trending_df()
+        self.assertTrue(get_regime_for_strategy(df, "stable", vix=35))
+
+    def test_mid_vix_allows_risky1(self):
+        """VIX 20-30 is elevated but risky1 still trades — equity curve filter handles sizing."""
+        df = make_trending_df()
+        self.assertTrue(get_regime_for_strategy(df, "risky1", vix=25))
+
+    def test_no_vix_falls_back_to_regime(self):
+        """None VIX should fall back to regime logic only."""
+        df = make_trending_df()
+        self.assertTrue(get_regime_for_strategy(df, "risky1", vix=None))
+
+    def test_get_vix_returns_float_or_none(self):
+        """get_vix should always return a float or None"""
+        vix = get_vix()
+        self.assertTrue(vix is None or isinstance(vix, float))
 
 if __name__ == "__main__":
     unittest.main()

@@ -18,10 +18,13 @@ from paper_trading.alpaca_paper import get_api, get_sleep_duration
 from metrics.risk_manager import get_position_size, should_close_position, get_portfolio_risk_level
 from core.logger import log_trade, log_heartbeat
 from metrics.equity_curve_filter import get_trading_state
+from models.regime_detector import get_vix
+
+
 
 strategy="stable"
 _peak_equity = {strategy: CAPITAL[strategy]} #get the highest equity
-
+vix = get_vix()
 #loading model only once to keep same model for each trade in single session, save memory (analysis of algorithms thank you) and to improve speed to avoid reinitializing model from disk each trade
 model=load_model("stable_model.pkl")
 
@@ -70,7 +73,7 @@ def get_current_position(api,ticker):
 
 
 
-def trade_ticker(api, ticker,multiplier=1.0):
+def trade_ticker(api, ticker,multiplier=1.0,vix=None):
 
     """
     Main trading code that will run once per ticker in trading cycle
@@ -118,7 +121,7 @@ def trade_ticker(api, ticker,multiplier=1.0):
             pass
 
     # Check regime
-    if not get_regime_for_strategy(df, strategy):
+    if not get_regime_for_strategy(df, strategy,vix):
         print(f"{ticker} regime unfavorable, sitting out")
         return
 
@@ -179,7 +182,7 @@ def run():
 
             for ticker in STABLE_ASSETS:
                 try:
-                    trade_ticker(api,ticker,multiplier)
+                    trade_ticker(api,ticker,multiplier,vix)
                 except Exception as e:
                     print(f"error trading this asset: {ticker}: {e}")
                     continue

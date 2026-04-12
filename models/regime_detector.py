@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from core.features import build_features
 from ta.trend import ADXIndicator
+import requests
 # Regime labels
 TRENDING  = "TRENDING"
 RANGING   = "RANGING"
@@ -46,14 +47,21 @@ def detect_regime(df):
     # Default
     return RANGING
 
-def get_regime_for_strategy(df, strategy):
+def get_regime_for_strategy(df, strategy, vix=None):
     """
-    Returns whether the current regime is suitable for a given strategy
-    strategy: "stable" | "risky1" | "risky2"
-    Returns : True if conditions are good, False if bot should sit out
+    This will return whether or not the current regime is suitable for the strategies currently avaialbe. If vix is above 30, risky bots sit out. its optional. <20 is low fear and normal trading. 20-30 is stable still trades risky sits out. greater than 30 means to stop now
+    #     Returns whether the current regime is suitable for a given strategy
+    #     strategy: "stable" | "risky1" | "risky2"
+    #     Returns : True if conditions are good, False if bot should sit out
     """
     regime = detect_regime(df)
-
+    if vix is not None:
+        if vix > 30:
+            if strategy in ["risky1", "risky2"]:
+                print(f"VIX={vix:.1f} — high fear, {strategy} sitting out")
+                return False
+                    # 20-30 range: risky bots still trade, equity curve filter handles sizing to prevent too much loss
+        
     if strategy == "stable":
         # Grid trading works best in ranging markets
         # Still okay in trending — just less optimal but it sits out when volatile
@@ -71,6 +79,10 @@ def get_regime_for_strategy(df, strategy):
     return True  # default to allowing trade if unknown strategy
 
 
+    
+
+
+
 def regime_summary(df):
     """
     Returns a readable summary of current market conditions and is used by the dashboard to display regime status
@@ -85,3 +97,68 @@ def regime_summary(df):
         "regime"      : regime,
         "description" : descriptions[regime]
     }
+
+
+
+def get_vix():
+    """"
+    This will return the latest VIX value from FRED API. VIX is a measurement of market fear. The higher, the worse. If the fetch fails it returns None so it doesn't crash the whole system
+    """
+
+    try:
+        url="https://fred.stlouisfed.org/graph/fredgraph.csv?id=VIXCLS"
+        response=requests.get(url,timeout=10)
+        lines=response.text.strip().split("\n")
+        #in csv format its DATE,VALUE, i want to skip header and find the last non NULL values in this
+        for line in reversed(lines[1:]):
+            date, value = line.split(",")
+            if value.strip() != ".":  # FRED uses "." for missing data not null, that was annoying.
+                return float(value.strip())
+        return None
+    except Exception:
+        return None #dont crash entire system!
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#  def get_regime_for_strategy(df, strategy):
+#     """
+#     Returns whether the current regime is suitable for a given strategy
+#     strategy: "stable" | "risky1" | "risky2"
+#     Returns : True if conditions are good, False if bot should sit out
+#     """
+#     regime = detect_regime(df)
+
+    # if strategy == "stable":
+    #     # Grid trading works best in ranging markets
+    #     # Still okay in trending — just less optimal but it sits out when volatile
+    #     return regime in [RANGING, TRENDING]
+
+    # elif strategy == "risky1":
+    #     # Momentum works best when trending
+    #     # Sit out when ranging or volatile
+    #     return regime == TRENDING
+
+    # elif strategy == "risky2":
+    #     # Crypto RL bot is trained to handle volatility and it only sits out when completely ranging with no movement
+    #     return regime in [TRENDING, VOLATILE]
+
+    # return True  # default to allowing trade if unknown strategy
+
