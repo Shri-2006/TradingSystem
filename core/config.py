@@ -83,6 +83,11 @@ STOP_LOSS_PER_TRADE={
 WARNING_DRAWDOWN={
     "stable":-.07,"risky1":-.15,"risky2":-.15 #half of the killswitch should be good for a warning (where it will start reducing how much of the position is held).
 }
+#ATR is the normal volatility for threshold scaling. if live atr exceeds limit the kill switch threshold wides to avoid being triggered by regular noise while if below threshold will tighten to protect capital and profit.
+#ATR is average true range, which measures how the asset price changes on average per day. it checksvolatility by looking at the biggest high minus low, high minus previous close, low minus previous close, then gets average over 14 days.
+ATR_BASELINE={
+    "stable":0.015,"risky1":.025,"risky2":.045#-1.5 daily atr can be normal for etfs, 2.5 is normal for regular stocks and 4.5 for crypto should be fine.
+}
 
 
 #working on new dashboard below Week 7

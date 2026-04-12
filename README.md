@@ -85,8 +85,7 @@ Not ready for set up yet
 - backtesting/engine.py — VectorBT backtesting engine, generates BUY/SELL signals from ML model, runs backtest with 0.1% fees and slippage, returns total return, Sharpe ratio, max drawdown
 - backtesting/run_backtest.py — runs backtests across all strategies
 - metrics/risk.py — Sharpe ratio (with live US Treasury rate fetch),max drawdown, win/loss ratio, compute_all_metric adn wrapper
-- metrics/risk_manager.py — per-trade risk management: stop loss, position sizing, peak equity kill switch, warning/critical thresholds
-- metrics/equity_curve_filter.py — macro trading state filter: reconstructs equity curve from closed trade history, computes moving average and drawdown, returns FULL/THROTTLE/HALT state with position size multiplier. Called once per cycle in stable.py and risky1.py before the per-ticker loop
+- metrics/risk_manager.py — per-trade risk: stop loss, position sizing, peak equity kill switch, warning/critical thresholds, ATR-based dynamic threshold scaling- metrics/equity_curve_filter.py — macro trading state filter: reconstructs equity curve from closed trade history, computes moving average and drawdown, returns FULL/THROTTLE/HALT state with position size multiplier. Called once per cycle in stable.py and risky1.py before the per-ticker loop
 - strategies/stable.py - Creating the strategy for the stable trading bot (one of the biggest files too actually)
 - strategies/risky1.py - Creating the strategy for the risky trading bot (one of the second biggest files)
 - paper_trading/alpaca_paper.py - centralized the Alpaca API wrapper for all strategies. Handles paper/live switching per bot, order submission, position checking, and kill switch execution

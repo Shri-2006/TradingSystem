@@ -839,3 +839,23 @@ The existing risk_manager.py handles per-trade risk: stop loss thresholds, posit
 
 **Result:** File complete. Will be wired into stable.py and risky1.py
 trading loops when those files are revisited - called once per cycle,before the per-ticker loop begins.
+
+
+
+## April 11, 2026 — ATR-Based Dynamic Kill Switch
+
+**Context:**
+Static drawdown thresholds (15% stable, 30% risky1) don't account for  volatility. During high-volatility regimes, normal price swings can trip the kill switch when not needed
+
+
+
+**Decision:** Scale kill switch thresholds dynamically using current ATR relative to a per-strategy baseline.
+
+- scale = current_atr / baseline_atr, clamped to [0.5x, 1.5x]
+- High ATR → thresholds widen (avoid noise triggers)
+- Low ATR → thresholds tighten (stricter protection in calm markets)
+- Falls back to static thresholds if ATR unavailable
+
+**Why:** ATR was already computed in features.py — no new data needed. current_atr is optional everywhere so nothing breaks on startup.
+
+**Result:** Wired into get_portfolio_risk_level, get_position_size, and should_close_position. Tested and passing.
