@@ -1,10 +1,10 @@
 import os
 import sqlite3
 import numpy as np
-from core.logger import get_logger
+
 from core.config import  CAPITAL
 
-logger=get_logger("equity_curve_filter")
+#print("equity_curve_filter")
 EQUITY_MA_PERIOD= 10 # how many closed trades to use for the MA
 HISTORY_WINDOW = 50 # how far back to look (in closed trades)
 THROTTLE_DRAWDOWN_P= 0.05  # 5%  then  half the position size

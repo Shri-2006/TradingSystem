@@ -18,6 +18,7 @@ from models.train import load_model
 from paper_trading.alpaca_paper import get_api, get_sleep_duration
 from metrics.risk_manager import get_position_size, should_close_position, get_portfolio_risk_level
 from core.logger import log_trade, log_heartbeat
+from metrics.equity_curve_filter import get_trading_state
 
 strategy="risky1"
 _peak_equity = {strategy: CAPITAL[strategy]} #get the highest equity
@@ -157,7 +158,7 @@ def get_current_position(api,ticker):
 #         #in other cases simply hold the pos
 #         print(f"HOLD{ticker}, no action needed rn")
 
-def trade_ticker(api, ticker):
+def trade_ticker(api, ticker,multiplier=1.0):
 
     """
     Main trading code that will run once per ticker in trading cycle
@@ -181,7 +182,7 @@ def trade_ticker(api, ticker):
     # Momentum exit — risky1 specific
 
     # Risk-adjusted position size
-    base_size = MAX_POSITION_SIZE[strategy]
+    base_size = MAX_POSITION_SIZE[strategy]*multiplier
     max_pos = get_position_size(strategy, equity, base_size)
     if max_pos == 0:
         print(f"Portfolio critical — skipping {ticker}")
@@ -261,10 +262,16 @@ def run():
                 print(f"Market is closed - slepeing for {sleep_secs//3600} hours {(sleep_secs%3600//60)} minutes")
                 time.sleep(sleep_secs)
                 continue
+            state,multiplier=get_trading_state(strategy)
+            if state=="HALT":
+                print(f"Equity curve halt is active for {strategy} and skipping cycle")
+                log_heartbeat(strategy,"PAUSED")
+                time.sleep(60)
+                continue
             #running trading cycle per each ticker (assets)
             for ticker in RISKY1_ASSETS:
                 try:
-                    trade_ticker(api,ticker)
+                    trade_ticker(api,ticker,multiplier)
                 except Exception as e:
                     print(f"error trading this asset: {ticker}: {e}")
                     continue
