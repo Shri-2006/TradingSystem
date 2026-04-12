@@ -19,12 +19,12 @@ from metrics.risk_manager import get_position_size, should_close_position, get_p
 from core.logger import log_trade, log_heartbeat
 from metrics.equity_curve_filter import get_trading_state
 from models.regime_detector import get_vix
-
+from data.macro_fetcher import get_macro_signal
 
 
 strategy="stable"
 _peak_equity = {strategy: CAPITAL[strategy]} #get the highest equity
-vix = get_vix()
+#vix = get_vix()
 #loading model only once to keep same model for each trade in single session, save memory (analysis of algorithms thank you) and to improve speed to avoid reinitializing model from disk each trade
 model=load_model("stable_model.pkl")
 
@@ -93,10 +93,8 @@ def trade_ticker(api, ticker,multiplier=1.0,vix=None):
         return
 
     current_price = float(df['close'].iloc[-1])
-    if 'atr' in df.columns:
-        current_atr = float(df['atr'].iloc[-1])
-    else:
-        None  
+    current_atr = float(df['atr'].iloc[-1]) if 'atr' in df.columns else None
+  
 
     # Risk-adjusted position size
     base_size = MAX_POSITION_SIZE[strategy]*multiplier
@@ -174,11 +172,25 @@ def run():
                 continue
             
             state,multiplier=get_trading_state(strategy)
+
+
+
             if state =="HALT":
                 print(f"Equity curve halt is currently active for {strategy} - skipping cycle")
                 log_heartbeat(strategy,"PAUSED")
                 time.sleep(60)
                 continue
+            vix = get_vix()
+            # Macro signal from SearXNG — raises effective VIX if alarming headlines detected
+            macro  = get_macro_signal()
+            if macro == "DANGER":
+                effective_vix = max(vix or 0, 35)
+            elif macro == "CAUTION":
+                effective_vix = max(vix or 0, 22)
+            else:
+               effective_vix = vix or 0
+            # Pass effective_vix instead of vix going forward
+            vix = effective_vix if effective_vix > 0 else None
 
             for ticker in STABLE_ASSETS:
                 try:

@@ -28,3 +28,6 @@ python-dotenv
 # Testing of system
 pytest
 alpaca-trade-api
+
+#google-generativeai
+google-genai
