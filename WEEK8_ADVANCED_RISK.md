@@ -57,15 +57,6 @@ Only implement if TextBlob sentiment proves insufficient.
 - update readme again
 - add supervised vs unsupervised vs reinforced learning chart that explains differences in methods
 
-## Bot 4 & 5 (do this absolutely last, make sure the first 3 bots work)
-- Implement a RL version of stable and risky1 for stocks and etfs
-
-## Bot 6(do this absolutely last, make sure the first 3 bots work)
-- Implement a supervised learning version of risky2 (for crypto)
-
-## Bot 7,8,9(do this absolutely last, make sure the first 3 bots work)
--Implement a unsupervised learning version of stable,risky1, risky2
-
 
 
 ## Cloud SQL update
