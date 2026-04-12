@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from core.features import build_features
-
+from ta.trend import ADXIndicator
 # Regime labels
 TRENDING  = "TRENDING"
 RANGING   = "RANGING"
@@ -23,19 +23,27 @@ def detect_regime(df):
 
     latest = df.iloc[-1]  # most recent bar
 
-    # ── Volatility check first ───────────────────────────
+    # Check for volatilty
     # If ATR is more than double the 20-bar average = volatile market
     atr_mean = df['atr'].rolling(window=20).mean().iloc[-1]
     if latest['atr'] > atr_mean * 2:
         return VOLATILE
 
-    # ── Trend check ──────────────────────────────────────
-    # SMA 20 above SMA 50 = uptrend while SMA 20 below SMA 50 = downtrend and Either way = TRENDING
-    if latest['sma_20'] > latest['sma_50'] * 1.01 or \
-       latest['sma_20'] < latest['sma_50'] * 0.99:
-        return TRENDING
+    #Trend Check
+    if len(df) >= 14:
+        adx_value = ADXIndicator(df['high'], df['low'], df['close'], window=14).adx().iloc[-1]
+        if adx_value > 25:
+            return TRENDING
+    else:
+        # fall back to SMA crossover if not enough bars for ADX
+        # # SMA 20 above SMA 50 = uptrend while SMA 20 below SMA 50 = downtrend and Either way = TRENDING
 
-    # ── Default ──────────────────────────────────────────
+        if latest['sma_20'] > latest['sma_50'] * 1.01 or \
+            latest['sma_20'] < latest['sma_50'] * 0.99:
+            return TRENDING
+
+ 
+    # Default
     return RANGING
 
 def get_regime_for_strategy(df, strategy):
