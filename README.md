@@ -18,6 +18,27 @@ XGBoost - supervised ml for stable and risky1 bots
 Stable Baselines3 - reinforcement learning for risky2
 VectorBT- Engine to test models on historical data
 Streamlit - Live dashboard to see performance
+SearXNG - self-hosted macro news search via HuggingFace Space
+FRED API - live VIX data for macro fear signal
+SAP AI Core - AI classification for ambiguous macro signals
+Google Gemini - fallback AI classifier
+
+## How the ML Works
+This system currently uses three different types of machine learning:
+| | Supervised Learning | Reinforcement Learning |
+|---|---|---|
+| **Used by** | stable, risky1 | risky2 |
+| **How it learns** | Learns from labeled historical examples (past BUY/SELL outcomes) | Learns by trial and error in a simulated environment |
+| **What it needs** | Historical price data with correct answers | An environment to act in and receive rewards/penalties |
+| **Output** | Predicts BUY or SELL for the next bar | Decides HOLD, BUY, or SELL based on current state |
+| **Strength** | Fast to train, interpretable, works well on stable patterns | Can learn complex multi-step strategies, handles position management |
+| **Weakness** | Struggles when market regimes change | Takes much longer to train, harder to debug |
+| **Algorithm** | XGBoost | PPO (Proximal Policy Optimization) via Stable Baselines3 |
+| **Why this algo** | Industry standard for tabular financial data, outperforms random forest and linear models | Most stable RL algorithm for discrete action spaces, less prone to collapse than DQN |
+
+### Why not unsupervised learning?
+Unsupervised learning (clustering, anomaly detection) has no concept of BUY or SELL — it finds patterns but can't make trading decisions on its own. It could be used as a feature layer on top of supervised learning in a future version, but is not the right primary model for a trading system
+
 
 ## Project Structure
 ```
@@ -41,6 +62,7 @@ Streamlit - Live dashboard to see performance
 ./data
 ./data/polygon_fetcher.py
 ./data/sentiment_fetcher.py
+./data/macro_fetcher.py
 ./metrics
 ./metrics/risk.py
 ./metrics/risk_manager.py
@@ -63,6 +85,8 @@ Streamlit - Live dashboard to see performance
 ./tests/test_backtesting.py
 ./tests/test_features.py
 ./tests/test_risk.py
+./tests/test_atr.py
+./tests/test_regime.py
 ```
 
 ## Setup
@@ -79,7 +103,7 @@ Not ready for set up yet
 - core/features.py- shared feature engineering for all 3 strategy bots. Computed rolling averages, RSI, momentum, Bollinger Bands, ATR, z-score, and volume indicators from raw data with open, high, low, close, volume data.
 - data/polygon_fetcher.py - fetch historical and live data relating to stocks and etfs from polygon.io, adding crypto support
 - data/sentiment_fetcher.py - fetch sentiment analysis from news articles using TextBlob and put into scores column in df
-- models/regime_detector.py - detect whether market is trending or ranging
+- models/regime_detector.py - detect whether market is trending or ranging, market regime detection using ADX (threshold 25, SMA fallback for <14 bars), VIX macro signal from FRED API (>30 blocks risky bots), get_vix() function
 - models/train.py — XGBoost training pipeline for stable and risky1. It will fetches historical data, builds features, creates BUY/SELL labels, trains model, and saves the model as a .pkl file
 - models/retrain.py — scheduled retraining every 14 days
 - backtesting/engine.py — VectorBT backtesting engine, generates BUY/SELL signals from ML model, runs backtest with 0.1% fees and slippage, returns total return, Sharpe ratio, max drawdown
@@ -94,11 +118,13 @@ Not ready for set up yet
 - run.py - unified system launcher
 - Dockerfile — containerizes the full system
 - docker-compose.yml — runs bots + Streamlit dashboard together
-- .github/workflows/test.yml — GitHub Actions CI, auto-runs 16 tests on every push to main
+- .github/workflows/test.yml — GitHub Actions CI, auto-runs all tests in tests/ folder on every push to main
 - models/rl_environment.py- Created a custom gymnasium trading env for risky2 rl bot. The state is price features +position+unrealized PnL. Actions 0=HOLD,1=Buy,2=SELL. There is small penatly for overtrading and nudges to exit loser positions. Drawdown traced per step is a hook for a future kill switch integration for this.
 - models/rl_train.py - PPO training pipeline for risky2. It fetches a year's worth of historical crypto daya, builds features and trains agent using MlpPolicy for about 50000 timesteps. The model will be saved in risky2_model.zip
 - strategies/risky2.py- Live RL trading strategy for crypto, it loads ppo model and builds live observation from the latest price data, and feeds it to the model for hold/buy/sell decisions. 
--
+- data/macro_fetcher.py — SearXNG macro circuit breaker. Scores headlines with weighted keywords, uses SAP AI Orchestration for ambiguous cases, Gemini as fallback, always returns CLEAR on failure. DANGER/CAUTION raises effective VIX level in run()
+- tests/test_atr.py — 17/17 passing
+- tests/test_regime.py — 15/15 passing
 ### nice sources to read up on:
 https://www.investopedia.com/terms/b/bollingerbands.asp
 

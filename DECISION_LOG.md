@@ -859,3 +859,56 @@ Static drawdown thresholds (15% stable, 30% risky1) don't account for  volatilit
 **Why:** ATR was already computed in features.py — no new data needed. current_atr is optional everywhere so nothing breaks on startup.
 
 **Result:** Wired into get_portfolio_risk_level, get_position_size, and should_close_position. Tested and passing.
+
+
+
+## April 12, 2026 — Week 8: ADX Regime Detection
+
+**Context:**
+Regime detector was using SMA crossover to detect trends, which gives false signals in choppy markets where price keeps crossing the average for no real reason.
+
+**Decision:** Replace SMA crossover with ADX (Average Directional Index), threshold 25.
+- ADX measures trend strength regardless of direction
+- SMA crossover fallback kept for when fewer than 14 bars are available
+- ADX > 25 = real trend, below = ranging
+
+**Why:** ADX is the industry standard for regime detection. SMA crossover can show "trending" just because price drifted slightly, ADX requires sustained directional movement to confirm.
+
+**Result:** the tests passed, system pending actual results during trading.
+
+
+## April 12, 2026 — Week 8: VIX Macro Signal
+
+**Context:**
+Regime detection was purely per-asset (ADX, ATR). No macro-level fear signal existed. A bot could be trading normally into a market crash because the individual stock ADX looked fine.
+
+**Decision:** Fetch live VIX from FRED API once per cycle, pass into regime check.
+- VIX < 20 then normal trading
+- VIX 20-30 then elevated, risky bots still trade but equity curve filter handles sizing
+- VIX > 30 not good, risky1 and risky2 sit out, stable continues
+
+**Why:** FRED is free with no API key. VIX covers macro fear that per-asset indicators miss entirely. Stable keeps trading because it's designed for rough markets.
+
+**Result:** the tests passed, system pending actual results during trading again
+
+## April 12, 2026 - Week 8: SearXNG Macro Circuit Breaker
+
+**Context:**
+VIX is a lagging indicator -it reacts after price moves. Needed something that could catch macro risk events from headlines before price action hits.
+
+**Decision:** Use self-hosted SearXNG instance (HuggingFace Space) to search macro keywords each cycle. Score results, use AI to classify ambiguous cases.
+
+**Signal flow:**
+- keyword score ≤ 1 then CLEAR
+- keyword score ≥ 8 -> DANGER
+- ambiguous (2-7) use SAP AI Orchestration if that fails go to Gemini fallback then failsafe is keyword fallback
+
+**Why SearXNG over paid APIs:** Already had a live HuggingFace instance running fir the ai knowledge system (check out my github for it!). Free, private, no rate limits that matter at our call frequency.
+
+**Why SAP + Gemini for ambiguous cases:** Keyword matching alone is too blunt — "federal reserve interest rate" appears in normal news daily. AI classification handles nuance. SAP AI Core was available from a previous project and I have permission to use it, and it wont cost any additional money so why not. Gemini Flash-Lite as fallback because it's free and fast.
+
+**Why CLEAR on failure:** SearXNG going down should never stop the bot. Macro signal is advisory, not mandatory.
+
+**Wiring:** DANGER raises effective VIX to 35, CAUTION raises to 22. Plugs into existing VIX logic — no new kill switch code needed.
+
+**Result:** Live, tested, returning correct signals.
