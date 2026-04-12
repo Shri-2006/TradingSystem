@@ -1,0 +1,1 @@
+implement storing the sqlite file or whatever isneeded to save training data either in a github repo, in azure storaage, onedrive, or something else.
