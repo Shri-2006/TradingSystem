@@ -796,3 +796,46 @@ System was running with only a basic kill switch. I felt like a multi-layer risk
 
 **Result:** All changes live on Azure, 
 tests passing in github actions
+
+
+
+
+
+
+
+## April 11, 2026 — Equity Curve Filter (equity_curve_filter.py)
+
+**Context:**
+The existing risk_manager.py handles per-trade risk: stop loss thresholds, position sizing, and the peak equity kill switch. However, there was no mechanism to detect sustained cold streaks — periods where the bot is consistently losing across multiple trades. A single bad trade is noise. A downward-trending equity curve is a signal.
+
+**Decision 1: Separate file from risk_manager.py**
+-  Add equity curve logic directly into risk_manager.py
+- Create a dedicated equity_curve_filter.py
+
+- Decision: create new file
+- Why: risk_manager.py operates at the per-trade level. Equity curve logicoperates at the macro level — it determines whether the bot should be trading at all, not how large a single trade should be. Mixing these two responsibilities into one file makes both harder to test and harder to explain. The separation also reflects how the system runs: equity_curve_filter  is called once per cycle, risk_manager is called once per ticker.
+
+**Decision 2: Three-state system instead of binary on/off**
+- Binary -either trade or don't
+- Three states: FULL, THROTTLE, HALT
+
+- Decision: three states
+- Why: A binary system is too abrupt. If equity dips slightly below its moving average, cutting all trading is an overreaction. Throttling to 50% position size first gives the bot room to recover before a full halt is triggered. THROTTLE acts as an early warning layer; HALT is the hard stop.
+
+**Decision 3: Equity reconstructed from closed trades, not a snapshot table**
+- Add a dedicated equity_snapshots table to SQLite
+- Reconstruct equity as starting capital + cumulative profit and loss from the existing trades table
+
+- Decision: Reconstruct from closed trades
+- Why: A new table would require schema changes and additional write logic in every bot. The trades table already contains all the data needed. Only closed trades (pnl IS NOT NULL) are included — open positions are excluded because unrealized PnL is not settled capital.
+
+**Decision 4: Thresholds**
+- Moving average period: 10 closed trades
+- Throttle trigger: drawdown > 5% OR equity below its 10-trade MA
+- Halt trigger: drawdown > 12% (complements the existing peak equity kill switch in risk_manager.py — that one is per-strategy, this one is window-based)
+- History window: last 50 closed trades
+
+- Why: 10-trade MA is responsive without being noisy. 5% throttle and 12% halt mirror the warning/critical structure already established in risk_manager.py, keeping the risk philosophy consistent across the system.
+
+**Result:** File complete. Will be wired into stable.py and risky1.py
+trading loops when those files are revisited - called once per cycle,before the per-ticker loop begins.
