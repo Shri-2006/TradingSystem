@@ -1,4 +1,4 @@
-# Trading Bot
+# SinghQuant: Multi-Strategy Trading System with ML and Risk Management
 
 ## Overview
 A multiple strategy algorithmic trading system that compares grid trading, momentum breakout, and reinforcement learning across stocks and crypto with backtesting on historical data, keeping risk metrics, and having a live dashboard through Streamlit
