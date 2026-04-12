@@ -21,7 +21,6 @@ Streamlit - Live dashboard to see performance
 
 ## Project Structure
 ```
-.
 ./.env
 ./.git
 ./.gitignore
@@ -44,6 +43,8 @@ Streamlit - Live dashboard to see performance
 ./data/sentiment_fetcher.py
 ./metrics
 ./metrics/risk.py
+./metrics/risk_manager.py
+./metrics/equity_curve_filter.py
 ./models
 ./models/regime_detector.py
 ./models/retrain.py
@@ -62,7 +63,6 @@ Streamlit - Live dashboard to see performance
 ./tests/test_backtesting.py
 ./tests/test_features.py
 ./tests/test_risk.py
-
 ```
 
 ## Setup
@@ -85,6 +85,8 @@ Not ready for set up yet
 - backtesting/engine.py — VectorBT backtesting engine, generates BUY/SELL signals from ML model, runs backtest with 0.1% fees and slippage, returns total return, Sharpe ratio, max drawdown
 - backtesting/run_backtest.py — runs backtests across all strategies
 - metrics/risk.py — Sharpe ratio (with live US Treasury rate fetch),max drawdown, win/loss ratio, compute_all_metric adn wrapper
+- metrics/risk_manager.py — per-trade risk management: stop loss, position sizing, peak equity kill switch, warning/critical thresholds
+- metrics/equity_curve_filter.py — macro trading state filter: reconstructs equity curve from closed trade history, computes moving average and drawdown, returns FULL/THROTTLE/HALT state with position size multiplier. Called once per cycle in stable.py and risky1.py before the per-ticker loop
 - strategies/stable.py - Creating the strategy for the stable trading bot (one of the biggest files too actually)
 - strategies/risky1.py - Creating the strategy for the risky trading bot (one of the second biggest files)
 - paper_trading/alpaca_paper.py - centralized the Alpaca API wrapper for all strategies. Handles paper/live switching per bot, order submission, position checking, and kill switch execution
@@ -95,12 +97,9 @@ Not ready for set up yet
 - docker-compose.yml — runs bots + Streamlit dashboard together
 - .github/workflows/test.yml — GitHub Actions CI, auto-runs 16 tests on every push to main
 - models/rl_environment.py- Created a custom gymnasium trading env for risky2 rl bot. The state is price features +position+unrealized PnL. Actions 0=HOLD,1=Buy,2=SELL. There is small penatly for overtrading and nudges to exit loser positions. Drawdown traced per step is a hook for a future kill switch integration for this.
-
 - models/rl_train.py - PPO training pipeline for risky2. It fetches a year's worth of historical crypto daya, builds features and trains agent using MlpPolicy for about 50000 timesteps. The model will be saved in risky2_model.zip
-
--strategies/risky2.py- Live RL trading strategy for crypto, it loads ppo model and builds live observation from the latest price data, and feeds it to the model for hold/buy/sell decisions. 
+- strategies/risky2.py- Live RL trading strategy for crypto, it loads ppo model and builds live observation from the latest price data, and feeds it to the model for hold/buy/sell decisions. 
 -
-
 ### nice sources to read up on:
 https://www.investopedia.com/terms/b/bollingerbands.asp
 
