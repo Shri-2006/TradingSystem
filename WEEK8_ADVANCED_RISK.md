@@ -70,3 +70,8 @@ Only implement if TextBlob sentiment proves insufficient.
 
 ## Cloud SQL update
 Have the model ping a cloud server (maybe your onedrive?) and upload the models that have been created. ONLY ON ORACLE CLOUD INSTANCE. This will prevent the bot from seeming like its inactive (so do it like once every 10 min). Doing this will also create a backup in case your instance crashes, so you dont have to train a brand new model for each strategy from scratch again. Now that we are on oracle, change the command in config.py to true in featureflags
+
+## Rename entire project
+This is fairly easy so do this first:rename the TradingSystem to
+ SinghQuant: Multi-Strategy Trading System with ML and Risk Management
+ (fix the name to be more professional and also to include details that were skipped out)
