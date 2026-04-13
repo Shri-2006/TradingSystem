@@ -1,5 +1,6 @@
 # SinghQuant: Multi-Strategy Trading System with ML and Risk Management
 
+## Live Demo: http://172.203.220.50:8501/
 ## Overview
 A multiple strategy algorithmic trading system that compares grid trading, momentum breakout, and reinforcement learning across stocks and crypto with backtesting on historical data, keeping risk metrics, and having a live dashboard through Streamlit
 
