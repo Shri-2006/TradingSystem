@@ -1,6 +1,5 @@
 # SinghQuant: Multi-Strategy Trading System with ML and Risk Management
 
-## Live Demo: http://172.203.220.50:8501/
 ## Overview
 A multiple strategy algorithmic trading system that compares grid trading, momentum breakout, and reinforcement learning across stocks and crypto with backtesting on historical data, keeping risk metrics, and having a live dashboard through Streamlit
 
@@ -8,21 +7,6 @@ A multiple strategy algorithmic trading system that compares grid trading, momen
 **Stable:** Stable is intended to go for longer term gains and to be careful of going on short risks in stocks/etfs
 **Risky1:** Risky1 is intended to go for short term gains in the stocks markets, going high risk high reward
 **Risky2:** Risky2 is intended to go for short term gains in the cryptocurrency markets, going high risk high reward.
-
-
-## Tech Stack
-Alpaca - allows for paper trading and live execution for all bots
-Polygon.io - Stock/ETF price data for stable and risky1, and crypto price data for risky2
-SQLite- SQL database provider
-scikit-learn - supervised ml for stable and risky1
-XGBoost - supervised ml for stable and risky1 bots
-Stable Baselines3 - reinforcement learning for risky2
-VectorBT- Engine to test models on historical data
-Streamlit - Live dashboard to see performance
-SearXNG - self-hosted macro news search via HuggingFace Space
-FRED API - live VIX data for macro fear signal
-SAP AI Core - AI classification for ambiguous macro signals
-Google Gemini - fallback AI classifier
 
 ## How the ML Works
 This system currently uses three different types of machine learning:
@@ -38,17 +22,40 @@ This system currently uses three different types of machine learning:
 | **Why this algo** | Industry standard for tabular financial data, outperforms random forest and linear models | Most stable RL algorithm for discrete action spaces, less prone to collapse than DQN |
 
 ### Why not unsupervised learning?
-Unsupervised learning (clustering, anomaly detection) has no concept of BUY or SELL — it finds patterns but can't make trading decisions on its own. It could be used as a feature layer on top of supervised learning in a future version, but is not the right primary model for a trading system
+Unsupervised learning (clustering, anomaly detection) has no concept of BUY or SELL — it finds patterns but can't make trading decisions on its own. It could be used as a feature layer on top of supervised learning in a future version, but is not the right primary model for a trading system.
 
+### Signal Flow Per Strategy
+Raw price data (Polygon.io)
+→ build_features() — RSI, ATR, Bollinger Bands, momentum, etc.
+→ regime_detector() — is the market trending, ranging, or volatile?
+→ VIX + SearXNG macro check — is the macro environment safe?
+→ ML model prediction — XGBoost (stable/risky1) or PPO (risky2)
+→ risk_manager() — position sizing, stop loss, ATR-adjusted kill switch
+→ equity_curve_filter() — is the bot itself on a cold streak?
+→ execute trade via Alpaca
+
+## Tech Stack
+Alpaca - allows for paper trading and live execution for all bots
+Polygon.io - Stock/ETF price data for stable and risky1, and crypto price data for risky2
+SQLite- SQL database provider
+scikit-learn - supervised ml for stable and risky1
+XGBoost - supervised ml for stable and risky1 bots
+Stable Baselines3 - reinforcement learning for risky2
+VectorBT- Engine to test models on historical data
+Streamlit - Live dashboard to see performance
+SearXNG - self-hosted macro news search via HuggingFace Space
+FRED API - live VIX data for macro fear signal
+SAP AI Core - AI classification for ambiguous macro signals
+Google Gemini - fallback AI classifier
 
 ## Project Structure
-```
 ./.env
 ./.git
 ./.gitignore
 ./DECISION_LOG.md
 ./README.md
 ./RESULTS.md
+./setup.sh
 ./backtesting
 ./backtesting/engine.py
 ./backtesting/results
@@ -88,15 +95,54 @@ Unsupervised learning (clustering, anomaly detection) has no concept of BUY or S
 ./tests/test_risk.py
 ./tests/test_atr.py
 ./tests/test_regime.py
+## Setup
+**Prerequisites:** Python 3.10+, Git
+
+**1. Clone the repo:**
+```bash
+git clone https://github.com/Shri-2006/SinghQuant.git
+cd SinghQuant
 ```
 
-## Setup
-Not ready for set up yet
+**2. Install dependencies:**
+```bash
+bash setup.sh
+```
+Note: `setup.sh` installs requirements then handles the alpaca/websockets version conflict separately. Do not use `pip install -r requirements.txt` directly.
+
+**3. Create your `.env` file:**
+ALPACA_API_KEY=
+ALPACA_SECRET_KEY=
+POLYGON_API_KEY=
+SAP_AUTH_URL=
+SAP_CLIENT_ID=
+SAP_CLIENT_SECRET=
+SAP_AI_API_URL=
+SAP_ORCHESTRATION_DEPLOYMENT_ID=
+RESOURCE_GROUP=default
+GEMINI_API_KEY=
+
+**4. Train the models:**
+```bash
+python3 models/train.py
+python3 -c "from models.rl_train import train_rl_model; train_rl_model(ticker='X:BTCUSD', days_to_look_back=365, timesteps=500000)"
+```
+
+**5. Run the system:**
+```bash
+nohup python3 -u run.py > bot.log 2>&1 &
+```
+
+## Deployment
+- **Live on Oracle Cloud ARM** (`129.213.134.186`) — 4 CPUs, 24GB RAM, always free
+- Dashboard coming soon at `129.213.134.186:8501`
+- Azure VM (`172.203.220.50`) — stopped, previously used for deployment
 
 ## Progress
 
 ### In Progress:
-- Oracle Cloud deployment — waiting on ARM capacity availability
+- Streamlit dashboard on Oracle Cloud
+- Port 8501 firewall setup on Oracle
 
 ### Completed Parts:
 - core/config.py - This provides the configuration of the system and what are the providers
@@ -110,9 +156,10 @@ Not ready for set up yet
 - backtesting/engine.py — VectorBT backtesting engine, generates BUY/SELL signals from ML model, runs backtest with 0.1% fees and slippage, returns total return, Sharpe ratio, max drawdown
 - backtesting/run_backtest.py — runs backtests across all strategies
 - metrics/risk.py — Sharpe ratio (with live US Treasury rate fetch),max drawdown, win/loss ratio, compute_all_metric adn wrapper
-- metrics/risk_manager.py — per-trade risk: stop loss, position sizing, peak equity kill switch, warning/critical thresholds, ATR-based dynamic threshold scaling- metrics/equity_curve_filter.py — macro trading state filter: reconstructs equity curve from closed trade history, computes moving average and drawdown, returns FULL/THROTTLE/HALT state with position size multiplier. Called once per cycle in stable.py and risky1.py before the per-ticker loop
-- strategies/stable.py - Creating the strategy for the stable trading bot (one of the biggest files too actually)
-- strategies/risky1.py - Creating the strategy for the risky trading bot (one of the second biggest files)
+- metrics/risk_manager.py — per-trade risk: stop loss, position sizing, peak equity kill switch, warning/critical thresholds, ATR-based dynamic threshold scaling
+- metrics/equity_curve_filter.py — macro trading state filter: reconstructs equity curve from closed trade history, computes moving average and drawdown, returns FULL/THROTTLE/HALT state with position size multiplier. Called once per cycle in stable.py and risky1.py before the per-ticker loop
+- strategies/stable.py - stable bot trading loop with full risk stack wired in
+- strategies/risky1.py - risky1 bot trading loop with momentum exit and full risk stack
 - paper_trading/alpaca_paper.py - centralized the Alpaca API wrapper for all strategies. Handles paper/live switching per bot, order submission, position checking, and kill switch execution
 - dashboard/compare.py - terminal comparison table for all strategies
 - dashboard/streamlit_app.py - live Streamlit web dashboard with strategy comparison table, recent trades, capital allocation pulled from config.py
@@ -121,13 +168,13 @@ Not ready for set up yet
 - docker-compose.yml — runs bots + Streamlit dashboard together
 - .github/workflows/test.yml — GitHub Actions CI, auto-runs all tests in tests/ folder on every push to main
 - models/rl_environment.py- Created a custom gymnasium trading env for risky2 rl bot. The state is price features +position+unrealized PnL. Actions 0=HOLD,1=Buy,2=SELL. There is small penatly for overtrading and nudges to exit loser positions. Drawdown traced per step is a hook for a future kill switch integration for this.
-- models/rl_train.py - PPO training pipeline for risky2. It fetches a year's worth of historical crypto daya, builds features and trains agent using MlpPolicy for about 50000 timesteps. The model will be saved in risky2_model.zip
-- strategies/risky2.py- Live RL trading strategy for crypto, it loads ppo model and builds live observation from the latest price data, and feeds it to the model for hold/buy/sell decisions. 
+- models/rl_train.py - PPO training pipeline for risky2. It fetches a year's worth of historical crypto data, builds features and trains agent using MlpPolicy for 500000 timesteps. The model will be saved in risky2_model.zip
+- strategies/risky2.py- Live RL trading strategy for crypto, it loads ppo model and builds live observation from the latest price data, and feeds it to the model for hold/buy/sell decisions.
 - data/macro_fetcher.py — SearXNG macro circuit breaker. Scores headlines with weighted keywords, uses SAP AI Orchestration for ambiguous cases, Gemini as fallback, always returns CLEAR on failure. DANGER/CAUTION raises effective VIX level in run()
 - tests/test_atr.py — 17/17 passing
 - tests/test_regime.py — 15/15 passing
+- setup.sh — handles dependency installation including alpaca/websockets version conflict
+
 ### nice sources to read up on:
 https://www.investopedia.com/terms/b/bollingerbands.asp
-
-
 

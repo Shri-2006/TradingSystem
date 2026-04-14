@@ -1,4 +1,4 @@
-#command to run in case you don't know: pip install -r requirements.txt
+#command to run in case you don't know: bash setup.sh
 # Data sources 
 polygon-api-client
 textblob
