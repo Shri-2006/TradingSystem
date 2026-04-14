@@ -30,4 +30,5 @@ pytest
 alpaca-trade-api==3.0.0
 
 #google-generativeai
-google-genaiwebsockets>=14.0
+google-genai
+websockets>=14.0
