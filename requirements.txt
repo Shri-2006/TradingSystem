@@ -27,7 +27,7 @@ python-dotenv
 
 # Testing of system
 pytest
-alpaca-trade-api
+alpaca-trade-api==3.0.0
 
 #google-generativeai
-google-genai
+google-genaiwebsockets>=14.0

@@ -37,7 +37,7 @@ def check_kill_switch(api):
     """
     global _peak_equity
     account=api.get_account()
-    equity=float(account.equity)
+    equity=float(account._raw['portfolio_value'])
 
     #update peak equity for the profit
     _peak_equity[strategy]=max(_peak_equity[strategy],equity)
@@ -78,7 +78,7 @@ def trade_ticker(api, ticker,multiplier=1.0,vix=None):
     Main trading code that will run once per ticker in trading cycle
     """
     account = api.get_account()
-    equity = float(account.equity)
+    equity = float(account._raw['portfolio_value'])
 
     # Get price data first — needed for stop loss and ML
     df = get_latest_bar(ticker)
@@ -290,7 +290,7 @@ if __name__=="__main__":
 #     This will checkk if the loss has exceeded 30% overall. if it has, it closes alll positions and stops trading immediately. It will also return true if kill switchh is fired, else false if safe
 #     """
 #     account=api.get_account()
-#     equity=float(account.equity)
+#     equity=float(account._raw['portfolio_value'])
 #     start_cash=CAPITAL["risky1"]
 #     drawdown=(equity-start_cash)/(start_cash);
 
