@@ -31,4 +31,3 @@ alpaca-trade-api==3.2.0
 
 #google-generativeai
 google-genai
-websockets>=14.0
