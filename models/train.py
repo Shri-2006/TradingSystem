@@ -103,3 +103,6 @@ def train_and_save(strategy, start, end):
     model,accuracy=train_model(X_combined,Y_combined)
     save_model(model,filename)
     print(f"{strategy} model was trained with an accuracy of {accuracy: .2%}")
+
+
+if __name__ == "__main__"
