@@ -105,4 +105,4 @@ def train_and_save(strategy, start, end):
     print(f"{strategy} model was trained with an accuracy of {accuracy: .2%}")
 
 
-if __name__ == "__main__"
+#if __name__ == "__main__"
