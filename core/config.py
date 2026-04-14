@@ -68,7 +68,7 @@ RETRAIN_INTERVAL_DAYS=14
 
 
 FEATURE_FLAGS={
-    "risky2_enabled":False #when false, risky2 model simply doesn't run. when true, risky2 model runs. meant because its still being built as of this moment and is wasting resources.
+    "risky2_enabled":True #when false, risky2 model simply doesn't run. when true, risky2 model runs. meant because its still being built as of this moment and is wasting resources.
 }
 
 
