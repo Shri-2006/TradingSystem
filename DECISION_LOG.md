@@ -912,3 +912,13 @@ VIX is a lagging indicator -it reacts after price moves. Needed something that c
 **Wiring:** DANGER raises effective VIX to 35, CAUTION raises to 22. Plugs into existing VIX logic — no new kill switch code needed.
 
 **Result:** Live, tested, returning correct signals.
+
+
+
+
+## [DATE] — Discord Webhook Heartbeat Monitoring
+
+Decision: Add per-cycle Discord heartbeat pings from stable.py and risky1.py
+Why: Need real-time visibility into bot health without SSH.
+         Kill switch alerts must be instant.
+Results: Pending check

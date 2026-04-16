@@ -21,6 +21,8 @@ from core.logger import log_trade, log_heartbeat
 from metrics.equity_curve_filter import get_trading_state
 from models.regime_detector import get_vix
 from data.macro_fetcher import get_macro_signal
+from data.discord_notifier import send_heartbeat
+
 
 
 strategy="risky1"
@@ -167,10 +169,21 @@ def run():
     """
     api = get_api("risky1")
     print("risky1 bot started now...")
+    last_trade_time = datetime.now()
+    last_sync_time = datetime.now()
     while True:
         try:
             if check_kill_switch(api):
                 print("Kill switch has stopped risky1 bot")
+                from data.discord_notifier import send_alert
+
+                account = api.get_account()
+                send_alert(
+                    bot_name="risky1",         
+                    alert_type="KILL SWITCH",
+                    message="Kill switch triggered — all positions closed. Bot halted.",
+                    portfolio_value=float(account.portfolio_value)
+                )
                 break
 
             # Check if market is open before trading
@@ -203,12 +216,24 @@ def run():
             for ticker in RISKY1_ASSETS:
                 try:
                     trade_ticker(api,ticker,multiplier,vix)
+                    last_trade_time = datetime.now()
                 except Exception as e:
                     print(f"error trading this asset: {ticker}: {e}")
                     continue
                 time.sleep(20)
             print(f"cycle has complteded at {datetime.now()}-time to sleep for 1 min")
+            last_sync_time = datetime.now()
             log_heartbeat(strategy, "RUNNING")
+            account = api.get_account()
+
+            send_heartbeat(
+                bot_name="risky1",
+                is_alive=True,
+                portfolio_value=float(account.portfolio_value),
+                last_trade_time=str(last_trade_time),
+                last_sync_time=str(last_sync_time),
+                extra_info="Cycle complete."
+            )
             time.sleep(60)
         except KeyboardInterrupt:
             print("Risky1 bot was manually stopped by user")
@@ -216,6 +241,8 @@ def run():
         except Exception as e:
             print(f"there was an unexpected error : {e}, will restart cycle in 60 seconds")
             time.sleep(60)
+
+       
         
     
 if __name__=="__main__":

@@ -1,6 +1,10 @@
 import os
 from dotenv import load_dotenv
+
 load_dotenv()
+
+#discord notification setup
+DISCORD_WEBHOOK_URL=os.getenv("DISCORD_WEBHOOK_URL","")
 
 #Paper trading mode, false means its actual money, true when paper trading
 PAPER_MODE={
