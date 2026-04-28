@@ -2,6 +2,7 @@
 
 ## Overview
 A multiple strategy algorithmic trading system that compares grid trading, momentum breakout, and reinforcement learning across stocks and crypto with backtesting on historical data, keeping risk metrics, and having a live dashboard through Streamlit
+http://129.213.134.186:8501
 
 ## Strategies
 **Stable:** Stable is intended to go for longer term gains and to be careful of going on short risks in stocks/etfs
